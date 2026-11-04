@@ -14,14 +14,14 @@ applyflow, a Manifest V3 Chrome extension (TypeScript, React side panel) that fi
 - **Auto-submit:** off by default; risk confirmation; per-site opt-in; pure gate function (kill switch, cap, CAPTCHA/login/unknown step, required fields at threshold); pacing; dry run.
 - **Truthfulness guard:** grounded drafting of cover letters and "why us" answers, with a deterministic source check, one feedback retry, and refusal when grounding is missing.
 - **Diagnostics:** redacted broken-site export (structure and mapping, no personal values).
-- **Quality:** 135 unit tests, 26 Playwright tests against the built extension (23 on fixtures and the UI, 3 live dry runs), a 196-question matching eval, CI on every push, tagged releases with the extension zip.
+- **Quality:** 144 unit tests, 26 Playwright tests against the built extension (23 on fixtures and the UI, 3 live dry runs), a 201-question matching eval, CI on every push, tagged releases with the extension zip.
 
 ## Verification status per site
 
 | Site | Status | Evidence |
 | --- | --- | --- |
 | Greenhouse | Live-tested (dry run) and fixture-tested | Live GitLab posting: 10 of 18 fields filled, dropdown selections verified in react-select's display; 2 captured fixtures |
-| Lever | Live-tested (dry run) and fixture-tested | Live Spotify posting: 11 of 15 filled; captured fixture |
+| Lever | Live-tested (dry run) and fixture-tested | Live Spotify posting: 11 of 15 filled; 2 captured fixtures (Spotify, Palantir) |
 | Ashby | Live-tested (dry run) and fixture-tested | Live Ramp posting: 5 of 15 filled (mostly free-text and yes/no questions with no saved answer); 2 captured fixtures |
 | Workable | Fixture-tested only | Hand-built fixture; the live site returned HTTP 429 to the build environment |
 | LinkedIn Easy Apply | Unverified | Synthetic multi-step fixture built from documented DOM patterns; needs a signed-in tester |
@@ -43,6 +43,6 @@ Live dry runs never submit: applyflow is not asked to submit, and the test abort
 ## Resume bullets
 
 - Built applyflow, an open-source Manifest V3 Chrome extension in TypeScript and React that fills job applications from a local profile, with on-demand script injection, per-origin permissions and optional AES-GCM encryption of all personal data.
-- Designed a staged question-matching pipeline (rules, fuzzy matching, constrained LLM classification) with calibrated confidence; measured 99.4% precision at the fill threshold on a 196-question labelled eval that gates CI.
+- Designed a staged question-matching pipeline (rules, fuzzy matching, constrained LLM classification) with calibrated confidence; measured 99.4% precision at the fill threshold on a 201-question labelled eval that gates CI.
 - Implemented framework-safe form filling for React-controlled inputs and react-select dropdowns, verified by Playwright tests that load the built extension in Chromium against fixtures captured from live Greenhouse, Lever and Ashby postings and by live dry runs.
 - Added safety layers for automation and generation: an opt-in auto-submit gate as a pure, fully unit-tested function (daily caps, CAPTCHA and login stops, dry run, kill switch) and a truthfulness guard that rejects AI-drafted answers containing claims not grounded in the user's profile.

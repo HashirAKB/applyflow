@@ -48,6 +48,15 @@ const CASES: [string, string, string, { company: string; role: RegExp }, [string
     ['Portfolio URL', 'website'],
     ['Have you ever been previously employed by Spotify?', 'previously_employed', true],
   ]],
+  ['lever-palantir.html', 'https://jobs.lever.co/palantir/6ed76ce8-4156-4b60-b120-403538bd66cd/apply', 'lever', { company: 'Palantir Technologies', role: /Administrative Business Partner/ }, [
+    ['Full name', 'full_name', true],
+    ['Language Skill(s)', 'languages', true],
+    ['Name Pronunciation', null],
+    ['Are you legally authorized to work', 'work_authorization', true],
+    ['Which university are you currently attending', 'school', true],
+    ['Please tell us how you heard about this opportunity.', 'how_heard', true],
+    ['Why do you want to work at Palantir?', 'why_company', false],
+  ]],
   ['ashby-ramp.html', 'https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245/application', 'ashby', { company: 'Ramp', role: /Security Engineer/ }, [
     ['Legal Name', 'full_name', true],
     ['Email', 'email', true],

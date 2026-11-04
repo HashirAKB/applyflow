@@ -141,7 +141,10 @@ export const CATALOGUE: CanonicalQuestion[] = [
     label: 'School / university',
     category: 'education',
     synonyms: ['university', 'college', 'institution', 'school name'],
-    patterns: [/^(school|university|college|institution|school name|university name|college name|name of (school|university|college|institution))$/],
+    patterns: [
+      /^(school|university|college|institution|school name|university name|college name|name of (school|university|college|institution))$/,
+      /\bwhich (university|college|school|institution|institute)\b.*\b(attend|attending|attended|graduate|graduated|study|studied)\b/,
+    ],
     source: 'profile',
     profile: (p) => p.education[0]?.school ?? '',
   },
@@ -177,7 +180,7 @@ export const CATALOGUE: CanonicalQuestion[] = [
     label: 'How did you hear about us',
     category: 'other',
     synonyms: ['source', 'where did you find this job', 'referral source'],
-    patterns: [/\bhow did you (hear|find|learn|come across)\b/, /\bwhere did you (hear|find|see|learn)\b/, /^(source|referral source|job source)$/],
+    patterns: [/\bhow (did )?you (hear|heard|find|found|learn|learned|come across|came across)\b/, /\bwhere did you (hear|find|see|learn)\b/, /^(source|referral source|job source)$/],
     source: 'answer',
   },
   {
@@ -225,7 +228,7 @@ export const CATALOGUE: CanonicalQuestion[] = [
     label: 'Languages spoken',
     category: 'work',
     synonyms: ['which languages do you speak', 'language proficiency'],
-    patterns: [/\blanguages? (do you speak|spoken|proficiency|known)\b/, /\b(speak|fluent in|fluency)\b/],
+    patterns: [/\blanguages? (do you speak|spoken|proficiency|known|skills?)\b/, /\b(speak|fluent in|fluency)\b/],
     source: 'answer',
   },
   {
@@ -241,7 +244,7 @@ export const CATALOGUE: CanonicalQuestion[] = [
     label: 'Pronouns',
     category: 'eeo',
     synonyms: ['preferred pronouns'],
-    patterns: [/\bpronoun/],
+    patterns: [/\bpronouns?\b/],
     source: 'answer',
   },
   {

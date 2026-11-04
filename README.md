@@ -56,7 +56,7 @@ flowchart LR
 | Site | Adapter | Verification |
 | --- | --- | --- |
 | Greenhouse (job-boards / boards.greenhouse.io) | dedicated | Live-tested (dry run on a public posting, 2026-11-04) and fixture-tested on 2 captured postings |
-| Lever (jobs.lever.co) | dedicated | Live-tested (dry run, 2026-11-04) and fixture-tested on a captured posting |
+| Lever (jobs.lever.co) | dedicated | Live-tested (dry run, 2026-11-04) and fixture-tested on 2 captured postings |
 | Ashby (jobs.ashbyhq.com) | dedicated | Live-tested (dry run, 2026-11-04) and fixture-tested on 2 captured postings |
 | Workable (apply.workable.com) | dedicated | Fixture-tested on a hand-built fixture. The live site rate-limited the build environment |
 | LinkedIn Easy Apply | dedicated | **Unverified** until tested by a signed-in user. Built from documented DOM patterns, tested on a synthetic multi-step fixture |
@@ -69,13 +69,13 @@ Found a site that breaks? Click **Report a broken site** in the side panel. It s
 
 ## Matching quality
 
-On 196 labelled form questions ([eval/questions.tsv](eval/questions.tsv), results in [eval/results.md](eval/results.md), run in CI):
+On 201 labelled form questions ([eval/questions.tsv](eval/questions.tsv), results in [eval/results.md](eval/results.md), run in CI):
 
 | Pipeline | Accuracy | Precision at threshold | Coverage | Ask rate |
 | --- | --- | --- | --- | --- |
-| Rules only | 90.8% | 99.4% | 90.4% | 17.3% |
-| Rules + fuzzy | 85.2% | 99.4% | 91.0% | 16.8% |
-| Rules + fuzzy + mock LLM | 89.8% | 98.2% | 93.3% | 13.8% |
+| Rules only | 91.5% | 99.4% | 91.2% | 17.4% |
+| Rules + fuzzy | 85.1% | 99.4% | 91.7% | 16.9% |
+| Rules + fuzzy + mock LLM | 89.1% | 97.7% | 93.9% | 13.4% |
 
 Precision at threshold is the number that matters for trust: of the fields filled without asking, how many were mapped correctly. The fuzzy row's lower accuracy comes from low-confidence guesses on questions that have no canonical match; those are still sent to the user, so precision is unchanged. The mock LLM is a deterministic stand-in (a concept lexicon) used to test the pipeline offline, not a real model; run `EVAL_PROVIDER=anthropic EVAL_MODEL=<model id> ANTHROPIC_API_KEY=... npm run eval` to add a real-model row.
 

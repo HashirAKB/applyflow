@@ -69,7 +69,7 @@ label ──► memory (1.00) ──► rules (0.95) ──► fuzzy (≤0.90) �
 - **`decide()`** turns a match into an action: it pulls the value from the profile or answer bank, maps it onto the field's options with `matchOption` (exact, yes/no polarity, unique containment, then fuzzy with a clear winner), extracts a single number for number inputs, and fills only at or above the threshold. Matches below 0.60 are dropped to "unknown" so a new answer is saved as a new custom question rather than under a wrong guess.
 - **Learning.** When the user answers in the side panel, `rememberAnswer` stores the value under the question id and adds the exact label as an alias, so the next site that uses the same wording matches by memory at 1.00.
 
-**Measuring it.** `npm run eval` runs 196 labelled questions through three configurations and reports accuracy, precision at the threshold, coverage and ask rate (`eval/results.md`). Precision is what protects users; CI fails below 0.95.
+**Measuring it.** `npm run eval` runs 201 labelled questions through three configurations and reports accuracy, precision at the threshold, coverage and ask rate (`eval/results.md`). Precision is what protects users; CI fails below 0.95.
 
 ## 4. Safety design
 
@@ -98,7 +98,7 @@ Type through a realistic `keydown`/`beforeinput`/`input`/`keyup` sequence so its
 `decide()` in `core/matching.ts`: there must be a match at or above the threshold, a stored value, the value must fit the field (an option match or a single number), and the field must be empty. Otherwise the action is `ask`, with the reason shown to the user.
 
 **6. How did you calibrate confidence?**
-Each stage has a ceiling (rules 0.95, fuzzy 0.90, LLM 0.85) so a weaker method cannot outrank a stronger one; fuzzy is penalised when two questions tie; the threshold defaults to 0.75 and the eval reports precision at that threshold. With rules alone, 99.4% of automatic fills were correct on 196 questions.
+Each stage has a ceiling (rules 0.95, fuzzy 0.90, LLM 0.85) so a weaker method cannot outrank a stronger one; fuzzy is penalised when two questions tie; the threshold defaults to 0.75 and the eval reports precision at that threshold. With rules alone, 99.4% of automatic fills were correct on 201 questions.
 
 **7. What does the LLM add, and how do you stop it doing damage?**
 It bridges wordings with no shared tokens ("How much would you like to earn?" to expected salary). It can only return an id from the candidate list (validated in `parseClassification`), its confidence is capped, it never clicks anything, and failures fall back to fuzzy. For writing, its output must pass the truthfulness guard.
