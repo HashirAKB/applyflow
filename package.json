@@ -1,6 +1,6 @@
 {
   "name": "applyflow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local-first Chrome extension that fills job application forms from your own profile and answer bank.",
   "scripts": {
     "build": "node scripts/build.mjs",
