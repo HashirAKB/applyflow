@@ -49,14 +49,14 @@ async function apply(decisions: FieldDecision[], resume: ResumeFile | null): Pro
       out.push({ ...d, action: 'ask', reason: 'Field disappeared from the page' });
     } else if (d.action === 'fill' && d.value !== null) {
       if (await fillField(field, d.value, resume)) {
-        highlight(field.elements[0], 'filled', d.confidence, d.fieldId);
+        highlight(field.elements, 'filled', d.confidence, d.fieldId);
         out.push(d);
       } else {
-        highlight(field.elements[0], 'ask', d.confidence, d.fieldId);
+        highlight(field.elements, 'ask', d.confidence, d.fieldId);
         out.push({ ...d, action: 'ask', reason: 'Saved answer does not match any option on this form' });
       }
     } else {
-      if (d.action === 'ask') highlight(field.elements[0], 'ask', d.confidence, d.fieldId);
+      if (d.action === 'ask') highlight(field.elements, 'ask', d.confidence, d.fieldId);
       out.push(d);
     }
   }
@@ -67,7 +67,7 @@ async function setField(fieldId: string, value: string, resume: ResumeFile | nul
   const field = fields.get(fieldId);
   if (!field) return false;
   const ok = await fillField(field, value, resume);
-  if (ok) highlight(field.elements[0], 'filled', 1, fieldId);
+  if (ok) highlight(field.elements, 'filled', 1, fieldId);
   return ok;
 }
 
@@ -75,7 +75,7 @@ function submit(dryRun: boolean): { clicked: boolean; found: boolean } {
   const btn = root && adapter ? adapter.submitButton(root) : null;
   if (!btn) return { clicked: false, found: false };
   if (dryRun) {
-    highlight(btn, 'filled', 1);
+    highlight([btn], 'filled', 1);
     return { clicked: false, found: true };
   }
   btn.click();

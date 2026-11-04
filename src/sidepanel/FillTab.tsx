@@ -216,7 +216,7 @@ function AskField({ decision, field, onDone }: { decision: FieldDecision; field:
         <p className="small">Attach this file yourself on the page.</p>
       ) : (
         <>
-          {field.options.length > 0 && field.kind !== 'checkbox' ? (
+          {field.options.length > 0 ? (
             <select value={value} onChange={(e) => setValue(e.target.value)} aria-label={field.label}>
               <option value="">Choose...</option>
               {field.options.map((o) => (

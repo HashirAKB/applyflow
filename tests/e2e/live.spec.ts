@@ -1,9 +1,9 @@
 // Live smoke test against real public postings. Skipped automatically when the network is not
 // reachable. Dry run only: applyflow is never asked to submit, and as a second guard any
-// non-GET request whose URL or body mentions "submit" is aborted. (Ashby loads its form through
-// GraphQL POST queries, so blocking every POST would break the page.)
+// non-GET request that looks like a submission or a file upload is aborted. (Ashby loads its form
+// through GraphQL POST queries, so blocking every POST would break the page.)
 import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { expect, swSend, tabIdFor, test } from './harness';
+import { expect, openPanel, swSend, tabIdFor, test } from './harness';
 import { seed } from './seed';
 
 async function json(url: string): Promise<unknown> {
@@ -37,14 +37,17 @@ test.beforeAll(async () => {
 });
 
 for (const platform of ['greenhouse', 'lever', 'ashby']) {
-  test(`live dry run: ${platform}`, async ({ context, sw }) => {
+  test(`live dry run: ${platform}`, async ({ context, sw, extensionId }) => {
     test.skip(!online || process.env.APPLYFLOW_SKIP_LIVE === '1', 'No network: live smoke test skipped');
     const target = targets.find((t) => t.platform === platform)!;
     await seed(sw);
     await context.route('**/*', (route) => {
       const req = route.request();
-      if (req.method() !== 'GET' && /submit/i.test(`${req.url()} ${req.postData() ?? ''}`)) return route.abort();
-      return route.continue();
+      if (req.method() === 'GET') return route.continue();
+      const isFileUpload = (req.headers()['content-type'] ?? '').startsWith('multipart/form-data');
+      const looksLikeSubmitOrUpload = /submit|upload|parse|resume/i.test(req.url()) || /submit/i.test(req.postData() ?? '');
+      // Abort submissions, and keep our dummy resume off real companies' resume parsers.
+      return isFileUpload || looksLikeSubmitOrUpload ? route.abort() : route.continue();
     });
     const page = await context.newPage();
     await page.goto(target.url, { waitUntil: 'networkidle', timeout: 45_000 });
@@ -57,6 +60,16 @@ for (const platform of ['greenhouse', 'lever', 'ashby']) {
     const asked = report.decisions.filter((d) => d.action === 'ask').length;
     appendFileSync('test-results/live-report.md', `| ${platform} | ${target.url} | ${report.decisions.length} | ${filled} | ${asked} | ${Math.round((100 * filled) / report.decisions.length)}% |\n`);
     expect(filled).toBeGreaterThan(2);
+    await page.locator('[data-applyflow]').first().scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, -120));
+    await page.screenshot({ path: `docs/screenshots/live-${platform}.png` });
+    if (platform === 'lever') {
+      const panel = await openPanel(context, extensionId, tabId);
+      await panel.setViewportSize({ width: 420, height: 900 });
+      await panel.getByRole('button', { name: 'Scan and fill this page' }).click();
+      await panel.getByRole('heading', { name: /Filled/ }).waitFor();
+      await panel.screenshot({ path: 'docs/screenshots/live-lever-panel.png' });
+    }
     if (platform === 'greenhouse') {
       // Custom dropdowns really hold the chosen options (read from react-select's own display).
       const chosen = await page.locator('.select__single-value').allTextContents();
