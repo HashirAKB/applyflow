@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Backend Engineer | Northwind Labs</title>
+<meta property="og:site_name" content="Northwind Labs"></head>
+<body>
+  <header><a href="/">Northwind Labs careers</a></header>
+  <form id="search"><input type="search" name="q" placeholder="Search roles"></form>
+  <main>
+    <h1>Backend Engineer</h1>
+    <section class="job-description">
+      <p>Northwind Labs builds logistics software. You will design TypeScript services on Node.js and PostgreSQL.</p>
+      <p>Requirements: 4+ years with Node.js, experience with AWS.</p>
+    </section>
+    <form id="apply" action="/submitted" method="post">
+      <div class="row"><label for="fn">First name *</label><input id="fn" name="first_name" required></div>
+      <div class="row"><label for="ln">Last name *</label><input id="ln" name="last_name" required></div>
+      <div class="row"><label for="em">Email *</label><input id="em" name="email" type="email" required></div>
+      <div class="row"><label for="ph">Phone</label><input id="ph" name="phone" type="tel"></div>
+      <div class="row"><div class="q">Notice period (days)</div><input name="notice" type="number"></div>
+      <div class="row"><label for="ctry">Country</label>
+        <select id="ctry" name="country"><option value="">Select...</option><option value="IN">India</option><option value="UK">United Kingdom</option></select></div>
+      <fieldset><legend>Are you willing to relocate to Pune?</legend>
+        <label><input type="radio" name="relocate" value="yes"> Yes</label>
+        <label><input type="radio" name="relocate" value="no"> No</label></fieldset>
+      <div class="row"><label for="tz">Which timezone do you work in?</label><input id="tz" name="tz"></div>
+      <div class="row"><label for="cv">Resume</label><input id="cv" name="cv" type="file"></div>
+      <button type="submit">Submit application</button>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,0 +1,197 @@
+# label<TAB>expected id ("none" = no canonical question; should go to the user)
+First Name	first_name
+Legal first name	first_name
+Given name	first_name
+Forename	first_name
+Last Name	last_name
+Surname	last_name
+Family name	last_name
+Legal last name (as on passport)	last_name
+Preferred First Name	preferred_name
+What name do you go by?	preferred_name
+Full name	full_name
+Name	full_name
+Your name	full_name
+Candidate Name	full_name
+Email	email
+Email address	email
+E-mail ID	email
+Your email	email
+Phone	phone
+Phone number	phone
+Mobile Number	phone
+Contact number (with country code)	phone
+WhatsApp number	phone
+Current location	location
+Location (City)	city
+Where are you currently based?	location
+Where do you live?	location
+Home address	location
+City	city
+Current city	city
+Country	country
+Country of residence	country
+Zip code	postal_code
+Postal code	postal_code
+PIN code	postal_code
+LinkedIn Profile	linkedin
+LinkedIn URL	linkedin
+Linkedin	linkedin
+GitHub URL	github
+Github profile	github
+Website	website
+Portfolio URL	website
+Personal website or blog	website
+Other website	website
+Current company	current_company
+Current employer	current_company
+Most recent employer	current_company
+Name of your present organisation	current_company
+Current job title	current_title
+Current designation	current_title
+Current role	current_title
+Title at your most recent position	current_title
+Resume/CV	resume
+Upload your resume	resume
+Attach CV	resume
+Curriculum Vitae	resume
+Cover Letter	cover_letter
+Motivation letter	cover_letter
+Why do you want to work at Acme?	why_company
+Why are you interested in this role?	why_company
+What excites you about this position?	why_company
+What interests you about our company?	why_company
+Why would you like to join us?	why_company
+What is your notice period?	notice_period
+Notice period (in days)	notice_period
+How soon can you join?	notice_period
+Are you currently serving notice?	notice_period
+Current CTC	current_ctc
+Current CTC (in LPA)	current_ctc
+What is your current salary?	current_ctc
+Current annual compensation	current_ctc
+Present package	current_ctc
+Last drawn salary	current_ctc
+Expected CTC	expected_ctc
+Expected CTC (LPA)	expected_ctc
+What are your salary expectations?	expected_ctc
+Desired salary	expected_ctc
+Desired compensation	expected_ctc
+What is your expected annual base pay?	expected_ctc
+Salary requirements	expected_ctc
+What compensation are you looking for?	expected_ctc
+Target pay range for this role	expected_ctc
+What is your asking pay?	expected_ctc
+When can you start?	start_date
+Earliest start date	start_date
+Date available	start_date
+Available start date	start_date
+What is your availability to begin?	start_date
+Will you now or in the future require sponsorship for employment visa status?	requires_sponsorship
+Do you require visa sponsorship?	requires_sponsorship
+Will you need us to sponsor a work visa?	requires_sponsorship
+Do you need an H-1B to work for us?	requires_sponsorship
+Are you legally authorized to work in the United States?	work_authorization
+Are you eligible to work in the UK?	work_authorization
+Do you have the right to work in Germany?	work_authorization
+Do you have a valid work permit for India?	work_authorization
+Are you lawfully entitled to work here?	work_authorization
+Are you willing to relocate?	willing_to_relocate
+Open to relocation?	willing_to_relocate
+Would you be willing to relocate to Bengaluru?	willing_to_relocate
+Are you open to moving to our Berlin office?	willing_to_relocate
+Are you willing to travel?	willing_to_travel
+This role requires 25% travel. Are you comfortable with that?	willing_to_travel
+Are you comfortable working in a hybrid setup?	work_mode
+This role is onsite 3 days a week. Can you commit?	work_mode
+Preferred work arrangement (remote/hybrid/office)	work_mode
+Are you able to work from the office in Pune?	work_mode
+Total years of experience	total_experience
+Total experience	total_experience
+Years of experience	total_experience
+How many years of professional experience do you have?	total_experience
+Overall work experience (years)	total_experience
+Relevant experience in years	total_experience
+How many years of experience do you have with TypeScript?	years_skill:typescript
+Years of React experience	years_skill:react
+How many years have you worked with Node.js?	years_skill:node.js
+Years of experience in Python	years_skill:python
+How many years of experience do you have using AWS?	years_skill:aws
+How many years of hands-on experience do you have with Kubernetes?	years_skill:kubernetes
+Highest level of education	highest_education
+Highest degree obtained	highest_education
+Education level	highest_education
+What is your highest qualification?	highest_education
+School	school
+University	school
+College name	school
+Degree	degree
+Field of study	field_of_study
+Discipline	field_of_study
+Major	field_of_study
+Graduation year	graduation_year
+Year of passing	graduation_year
+How did you hear about this job?	how_heard
+How did you hear about us?	how_heard
+Where did you find this posting?	how_heard
+Source	how_heard
+How did you come across this opportunity?	how_heard
+Were you referred by a current employee?	referral
+Referral name	referral
+Who referred you?	referral
+Have you previously worked for Stripe?	previously_employed
+Have you ever been employed by us before?	previously_employed
+Are you a former employee?	previously_employed
+Are you at least 18 years of age?	age_over_18
+Are you over 18?	age_over_18
+Are you of legal working age?	age_over_18
+Are you willing to undergo a background check?	background_check
+Do you consent to background verification?	background_check
+Do you hold an active security clearance?	security_clearance
+What languages do you speak?	languages
+Are you fluent in German?	languages
+Gender	gender
+What is your gender identity?	gender
+Pronouns	pronouns
+Are you Hispanic/Latino?	hispanic_latino
+Race	race_ethnicity
+Please identify your race/ethnicity	race_ethnicity
+Veteran Status	veteran_status
+Are you a protected veteran?	veteran_status
+Disability Status	disability_status
+Do you have a disability?	disability_status
+I agree to the processing of my personal data	privacy_consent
+I have read and accept the candidate privacy notice	privacy_consent
+GDPR consent	privacy_consent
+What is your pay right now?	current_ctc
+How much do you make today?	current_ctc
+How much would you like to earn?	expected_ctc
+How long is the period you must serve before leaving your employer?	notice_period
+When could you commence employment?	start_date
+Is there anything that would prevent you from lawfully working here?	work_authorization
+Would you move house for this job?	willing_to_relocate
+Mailing address	location
+Contact e-mail	email
+Link to your code repository profile	github
+Your online CV or portfolio site	website
+What is your academic background?	highest_education
+Which institute did you graduate from?	school
+Did someone at the company recommend you?	referral
+Describe a project you are proud of	none
+What is your favourite programming language and why?	none
+Tell us about a time you resolved a conflict	none
+Anything else you would like us to know?	none
+What is the airspeed velocity of an unladen swallow?	none
+Do you have experience mentoring junior engineers?	none
+Describe your ideal team culture	none
+How do you approach code reviews?	none
+What is your T-shirt size?	none
+Are you comfortable with on-call rotations?	none
+What is your biggest weakness?	none
+Share a link to something you built	none
+Which timezone do you work in?	none
+Are you currently enrolled in a degree program?	none
+What questions do you have for us?	none
+Do you have a non-compete agreement?	none
+How would your manager describe you?	none
+What is your dietary preference for the onsite lunch?	none

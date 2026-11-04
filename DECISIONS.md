@@ -16,3 +16,19 @@ Decisions made without the owner, with alternatives and reasons.
 ## D4 Test runner: Vitest with jsdom
 - Alternatives: Jest.
 - Why: native ESM and TypeScript with no Babel config; same API as Jest.
+
+## D5 Anthropic provider uses the official SDK; OpenAI-compatible uses fetch
+- Alternatives: raw fetch for both; an OpenAI-compatible shim for Anthropic.
+- Why: the SDK gives typed requests and error classes and keeps up with API changes. The OpenAI-compatible provider is a single POST that also serves Groq, Ollama and LM Studio, so a dependency is not worth it there.
+- Default Anthropic model `claude-opus-5-5` with `effort: low` for classification; the user can change the model in settings. Server-side refusal fallback is enabled.
+
+## D6 Mock LLM is a concept lexicon
+- Alternatives: echoing the expected answer (meaningless), recorded real-model replies (needs a key and goes stale).
+- Why: deterministic, offline, reads the same prompt and returns the same JSON as a real provider, so the full parse and confidence path is tested. The eval labels its row clearly as a mock.
+
+## D7 Content script injected on demand
+- Alternatives: static content_scripts on every ATS host, or `<all_urls>`.
+- Why: nothing runs on a page until the user clicks fill. Dedicated job sites are listed host permissions; any other site is requested per origin at the moment of use (optional_host_permissions).
+
+## D8 Never overwrite a value already on the page
+- Why: LinkedIn and others prefill fields from the account. Overwriting would silently replace data the site or user chose.

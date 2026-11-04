@@ -23,6 +23,8 @@ export interface FieldDescriptor {
   required: boolean;
   /** The input's name attribute. Helps rules on sites with poor labels. */
   name: string;
+  /** The page (or the user) already put a value here. We never overwrite it. */
+  hasValue: boolean;
 }
 
 export type MatchMethod = 'rule' | 'fuzzy' | 'llm' | 'none';

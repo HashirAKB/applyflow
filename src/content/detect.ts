@@ -47,6 +47,12 @@ function isRequired(el: HTMLElement, label: string): boolean {
   );
 }
 
+function hasValue(el: HTMLElement): boolean {
+  if (el instanceof HTMLSelectElement) return el.selectedIndex > 0 && el.value !== '';
+  if (el instanceof HTMLInputElement && el.type === 'file') return !!el.files?.length;
+  return !!(el as HTMLInputElement).value?.trim();
+}
+
 export function detectFields(root: ParentNode): DetectedField[] {
   const out: DetectedField[] = [];
   const groups = new Map<string, HTMLInputElement[]>();
@@ -85,6 +91,7 @@ export function detectFields(root: ParentNode): DetectedField[] {
         options,
         required: isRequired(el, el.closest('label')?.textContent ?? ''),
         name: el.getAttribute('name') ?? '',
+        hasValue: hasValue(el),
       },
       elements: [el],
     });
@@ -103,6 +110,8 @@ export function detectFields(root: ParentNode): DetectedField[] {
         options: single ? [] : inputs.map(optionText),
         required: inputs.some((i) => isRequired(i, '')),
         name: inputs[0].name,
+        // A lone checkbox's unchecked state is a valid answer, so only groups count as pre-filled.
+        hasValue: !single && inputs.some((i) => i.checked),
       },
       elements: inputs,
     });

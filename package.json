@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "eval": "echo eval pending",
+    "eval": "node scripts/eval.mjs",
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "repository": {
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/HashirAKB/applyflow#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0",
     "mammoth": "^1.13.0",
     "pdfjs-dist": "^4.10.38",
     "react": "^18.3.1",
