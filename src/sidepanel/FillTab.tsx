@@ -3,6 +3,7 @@ import type { FieldDecision, FieldDescriptor } from '../core/fields';
 import type { State } from '../core/messages';
 import { questionLabel } from '../core/canonical';
 import type { FillReport } from '../background/fill';
+import type { AutoResult } from '../background/autosubmit';
 import { send } from './api';
 
 export async function currentTabId(): Promise<number> {
@@ -23,6 +24,23 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [needsOrigin, setNeedsOrigin] = useState('');
+  const [auto, setAuto] = useState<AutoResult | null>(null);
+
+  async function autoApply() {
+    setBusy(true);
+    setAuto(null);
+    setError('');
+    try {
+      const res = await send<AutoResult>({ type: 'autoApply', tabId: await currentTabId() });
+      setAuto(res);
+      setReport(res.report);
+      onChange();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function scan(type: 'fillTab' | 'nextStep' = 'fillTab') {
     setBusy(true);
@@ -69,6 +87,26 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
         </div>
       )}
       {error && <p className="error">{error}</p>}
+      {report && state.settings.autoSubmit.enabled && state.settings.autoSubmit.sites[report.scan.site] && (
+        <div className="card warn">
+          <button className="wide" onClick={autoApply} disabled={busy}>
+            {state.settings.autoSubmit.dryRun ? 'Auto-apply (dry run)' : 'Auto-apply and submit'}
+          </button>
+          <button className="danger wide" onClick={() => send({ type: 'killSwitch' }).then(onChange)}>
+            Stop all auto-submit
+          </button>
+        </div>
+      )}
+      {auto && (
+        <div className={auto.outcome === 'stopped' ? 'card warn' : 'card'} data-testid="auto-result">
+          <strong>{auto.outcome === 'submitted' ? 'Submitted.' : auto.outcome === 'dry-run' ? 'Dry run complete.' : 'Stopped. Over to you.'}</strong>
+          <ul className="small">
+            {auto.reasons.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {report && (
         <>
           <div className="card">

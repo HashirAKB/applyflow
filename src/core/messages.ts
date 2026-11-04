@@ -23,6 +23,8 @@ export type Request =
   | { type: 'match'; fields: FieldDescriptor[] }
   | { type: 'fillTab'; tabId: number }
   | { type: 'nextStep'; tabId: number }
+  | { type: 'autoApply'; tabId: number }
+  | { type: 'killSwitch' }
   | { type: 'answerField'; tabId: number; field: FieldDescriptor; questionId: string | null; value: string; remember: boolean }
   | { type: 'generate'; tabId: number; field: FieldDescriptor }
   | { type: 'diagnostics'; tabId: number };

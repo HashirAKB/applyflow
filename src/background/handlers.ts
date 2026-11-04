@@ -3,6 +3,7 @@
 import type { Request, State } from '../core/messages';
 import type { Store } from '../storage/store';
 import { answerField, fillTab, nextStep } from './fill';
+import { autoApply } from './autosubmit';
 
 export async function handle(store: Store, msg: Request, _sender: chrome.runtime.MessageSender): Promise<unknown> {
   switch (msg.type) {
@@ -27,6 +28,11 @@ export async function handle(store: Store, msg: Request, _sender: chrome.runtime
       return fillTab(store, msg.tabId);
     case 'nextStep':
       return nextStep(store, msg.tabId);
+    case 'autoApply':
+      return autoApply(store, msg.tabId);
+    case 'killSwitch':
+      await store.update('settings', (s) => ({ ...s, autoSubmit: { ...s.autoSubmit, enabled: false } }));
+      return getState(store);
     case 'answerField':
       return answerField(store, msg.tabId, msg.field, msg.questionId, msg.value, msg.remember);
     default:

@@ -42,3 +42,10 @@ Decisions made without the owner, with alternatives and reasons.
 
 ## D11 Bundle size
 - The Anthropic SDK makes background.js about 1 MB, and pdf.js plus mammoth make the side panel about 1.5 MB. Acceptable for a locally installed extension; nothing is downloaded at runtime.
+
+## D12 Auto-submit is user-initiated per application
+- Alternatives: background queue that applies to many postings unattended.
+- Why: the user opens the posting and clicks "Auto-apply"; applyflow never navigates to new postings by itself. This keeps a person in the loop for every application, keeps volume naturally low, and makes the daily cap a backstop rather than the only brake.
+- Auto-submit never runs on the generic adapter: an unknown site cannot be trusted to have a recognisable final step.
+- The usage counter is incremented before the submit click so a crash after clicking cannot permit an extra submission.
+- The pause between automated clicks is pacing (no faster than a person), not concealment. No stealth or anti-detection measures exist anywhere in the code.

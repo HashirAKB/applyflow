@@ -9,7 +9,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [x] M5 side panel UI + onboarding/resume import
 - [x] M6 tracker
 - [x] M7 LinkedIn/Naukri adapters
-- [ ] M8 auto-submit with safeguards
+- [x] M8 auto-submit with safeguards
 - [ ] M9 truthfulness guard + cover letter generation
 - [ ] M10 diagnostics
 - [ ] M11 packaging + docs + reviewer pass
