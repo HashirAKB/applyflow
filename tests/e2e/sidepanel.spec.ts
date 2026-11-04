@@ -41,3 +41,32 @@ test('fill tab: scan, see what was filled and answer what needs you', async ({ c
   await expect(page.locator('#tz')).toHaveValue('IST (UTC+5:30)');
   await expect(panel.getByTestId('ask-field').filter({ hasText: 'timezone' })).toHaveCount(0);
 });
+
+test('tracker logs the application with answers and the job description, and exports CSV', async ({ context, sw, extensionId }) => {
+  await seed(sw);
+  await serveFixture(context, URL, 'generic-careers.html');
+  const page = await context.newPage();
+  await page.goto(URL);
+  const tabId = await tabIdFor(sw, URL);
+  const panel = await openPanel(context, extensionId, tabId);
+  await panel.getByRole('button', { name: 'Scan and fill this page' }).click();
+  await expect(panel.getByText('Backend Engineer')).toBeVisible();
+
+  const apps = (await sw.evaluate(async () => (await chrome.storage.local.get('applications')).applications)) as { company: string; answers: Record<string, string>; jobDescription: string }[];
+  expect(apps).toHaveLength(1);
+  expect(apps[0]).toMatchObject({ company: 'Northwind Labs', role: 'Backend Engineer', site: 'generic', status: 'filled' });
+  expect(apps[0].answers['First name']).toBe('Ada');
+  expect(apps[0].jobDescription).toContain('logistics software');
+
+  await panel.getByRole('tab', { name: 'Tracker' }).click();
+  await expect(panel.getByTestId('application-row')).toHaveCount(1);
+  await panel.getByLabel('Status for Backend Engineer').selectOption('interviewing');
+  const download = panel.waitForEvent('download');
+  await panel.getByRole('button', { name: 'Export CSV' }).click();
+  const csv = await (await download).createReadStream().then(async (s) => {
+    let t = '';
+    for await (const c of s) t += c;
+    return t;
+  });
+  expect(csv).toContain('Northwind Labs,Backend Engineer,interviewing');
+});

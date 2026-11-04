@@ -2,6 +2,7 @@
 import { rememberAnswer } from '../core/answers';
 import type { FieldDecision, FieldDescriptor } from '../core/fields';
 import { decide, matchField } from '../core/matching';
+import { recordApplication } from '../core/tracker';
 import type { ApplyResult, ScanResult } from '../core/messages';
 import type { Store } from '../storage/store';
 import { providerFor } from './llm';
@@ -31,6 +32,18 @@ export async function fillTab(store: Store, tabId: number): Promise<FillReport> 
     decisions.push(decide(field, match, data));
   }
   const applied = await tabSend<ApplyResult>(tabId, { type: 'apply', decisions, resume });
+
+  // Log the application with the answers actually written to the page.
+  const labels = new Map(scan.fields.map((f) => [f.id, f.label]));
+  const used: Record<string, string> = {};
+  for (const d of applied.decisions) {
+    if (d.action === 'fill' && d.value !== null) used[labels.get(d.fieldId) ?? d.fieldId] = d.value === 'resume' ? (resume?.name ?? 'resume') : d.value;
+  }
+  if (scan.fields.length) {
+    await store.update('applications', (list) =>
+      recordApplication(list, { url: scan.url, site: scan.site, company: scan.job.company, role: scan.job.role, jobDescription: scan.job.description, answers: used }),
+    );
+  }
   return { scan, decisions: applied.decisions };
 }
 
@@ -47,5 +60,12 @@ export async function answerField(
     await store.update('answers', (bank) => rememberAnswer(bank, { questionId, label: field.label, value }));
   }
   await ensureContentScript(tabId);
-  return tabSend<boolean>(tabId, { type: 'setField', fieldId: field.id, value, resume: field.kind === 'file' ? await store.get('resume') : null });
+  const ok = await tabSend<boolean>(tabId, { type: 'setField', fieldId: field.id, value, resume: field.kind === 'file' ? await store.get('resume') : null });
+  const url = (await chrome.tabs.get(tabId)).url;
+  if (ok && url) {
+    await store.update('applications', (list) =>
+      recordApplication(list, { url, site: '', company: '', role: '', jobDescription: '', answers: { [field.label]: value } }),
+    );
+  }
+  return ok;
 }
