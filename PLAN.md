@@ -11,7 +11,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [ ] M7 LinkedIn/Naukri adapters
 - [ ] M8 auto-submit with safeguards
 - [ ] M9 truthfulness guard + cover letter generation
-- [x] M10 diagnostics
-- [x] M11 packaging + docs + reviewer pass
+- [ ] M10 diagnostics
+- [ ] M11 packaging + docs + reviewer pass
 
 Stop rule: no new milestone after 07:00 UTC.
