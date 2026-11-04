@@ -40,6 +40,17 @@ Live dry runs never submit: applyflow is not asked to submit, and the test abort
 - Chrome only; the side panel API is required.
 - The background bundle is about 1 MB because of the Anthropic SDK.
 
+## Reviewer pass (security and engineering)
+
+Checked and fixed before release:
+- Manifest: only `storage`, `sidePanel`, `scripting` plus six job-site hosts; everything else is optional and requested per origin. The test-only host and test hook are absent from the release build (verified in the zip).
+- The service worker now answers only extension pages (`sender.url` inside the extension), so a compromised page context cannot request the profile; saved keys are allow-listed so the daily-cap counter cannot be overwritten from the UI.
+- Pre-filled fields are no longer sent through matching (no wasted LLM calls carrying their labels), and the resume file reaches the page only when a resume field is being filled.
+- Custom dropdown options are scoped to their own widget (a document-wide search once picked an option from an unrelated phone-code list).
+- Weak matches (under 0.60) are not used as hints, so answers are never saved under a wrong question.
+- No personal data in logs (`console.log` banned by lint), no remote code, no hard-coded model id; bundled libraries' `new Function` probes are blocked by the MV3 CSP.
+- Live tests abort any request that looks like a submission or file upload, so dummy data never reaches real companies.
+
 ## Resume bullets
 
 - Built applyflow, an open-source Manifest V3 Chrome extension in TypeScript and React that fills job applications from a local profile, with on-demand script injection, per-origin permissions and optional AES-GCM encryption of all personal data.
