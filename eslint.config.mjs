@@ -11,10 +11,12 @@ export default tseslint.config(
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
   {
-    files: ['scripts/**', 'eval/**', 'tests/**'],
+    files: ['scripts/**', 'eval/**', 'tests/**', '*.config.*'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly', URL: 'readonly' } },
     rules: { 'no-console': 'off' },
   },
 );
