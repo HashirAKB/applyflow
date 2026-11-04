@@ -1,0 +1,48 @@
+{
+  "name": "applyflow",
+  "version": "0.1.0",
+  "description": "Local-first Chrome extension that fills job application forms from your own profile and answer bank.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/build.mjs && node scripts/package.mjs",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "eval": "node --experimental-strip-types eval/run.ts",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HashirAKB/applyflow.git"
+  },
+  "keywords": [],
+  "author": "Hashir Ahmed K B",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HashirAKB/applyflow/issues"
+  },
+  "homepage": "https://github.com/HashirAKB/applyflow#readme",
+  "dependencies": {
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^4.10.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.63.0",
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "jsdom": "^25.0.1",
+    "typescript": "5.6",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^2.1.9"
+  },
+  "private": true,
+  "type": "module"
+}
