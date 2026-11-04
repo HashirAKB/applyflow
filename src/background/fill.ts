@@ -3,6 +3,7 @@ import { rememberAnswer } from '../core/answers';
 import type { FieldDecision, FieldDescriptor } from '../core/fields';
 import { decide, matchField } from '../core/matching';
 import { recordApplication } from '../core/tracker';
+import { draftAnswer, type Draft } from '../core/guard';
 import type { ApplyResult, ScanResult } from '../core/messages';
 import type { Store } from '../storage/store';
 import { providerFor } from './llm';
@@ -45,6 +46,14 @@ export async function fillTab(store: Store, tabId: number): Promise<FillReport> 
     );
   }
   return { scan, decisions: applied.decisions };
+}
+
+/** Draft a written answer grounded in the profile and the job description on the page. */
+export async function generate(store: Store, tabId: number, field: FieldDescriptor): Promise<Draft> {
+  await ensureContentScript(tabId);
+  const scan = await tabSend<ScanResult>(tabId, { type: 'scan' });
+  const [settings, secrets, profile] = await Promise.all([store.get('settings'), store.get('secrets'), store.get('profile')]);
+  return draftAnswer(field.label, profile, scan.job, providerFor(settings, secrets));
 }
 
 /** User asked to move to the next step: click the site's own Next button, let it render, fill again. */

@@ -10,7 +10,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [x] M6 tracker
 - [x] M7 LinkedIn/Naukri adapters
 - [x] M8 auto-submit with safeguards
-- [ ] M9 truthfulness guard + cover letter generation
+- [x] M9 truthfulness guard + cover letter generation
 - [ ] M10 diagnostics
 - [ ] M11 packaging + docs + reviewer pass
 
