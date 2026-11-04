@@ -62,8 +62,15 @@ function comboboxOptions(input: HTMLInputElement): HTMLElement[] {
  */
 export async function fillCombobox(input: HTMLInputElement, value: string, timeoutMs = 1500): Promise<boolean> {
   input.focus();
-  input.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-  setText(input, value, true);
+  // react-select opens its menu from its keyboard handlers, not from a bare `input` event, so send
+  // the same sequence of events that typing produces.
+  input.dispatchEvent(new KeyboardEvent('keydown', { key: value[0] ?? '', bubbles: true }));
+  input.dispatchEvent(new InputEvent('beforeinput', { bubbles: true, data: value, inputType: 'insertText' }));
+  const set = nativeSetter(input, 'value');
+  if (set) set.call(input, value);
+  else input.value = value;
+  input.dispatchEvent(new InputEvent('input', { bubbles: true, data: value, inputType: 'insertText' }));
+  input.dispatchEvent(new KeyboardEvent('keyup', { key: value[value.length - 1] ?? '', bubbles: true }));
   for (const end = Date.now() + timeoutMs; Date.now() < end; await sleep(100)) {
     const opts = comboboxOptions(input);
     const i = matchOption(value, opts.map((o) => (o.textContent ?? '').trim()));
