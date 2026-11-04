@@ -32,3 +32,13 @@ Decisions made without the owner, with alternatives and reasons.
 
 ## D8 Never overwrite a value already on the page
 - Why: LinkedIn and others prefill fields from the account. Overwriting would silently replace data the site or user chose.
+
+## D9 Resume parsing is heuristic, no LLM
+- Alternatives: send resume text to the configured LLM for structured extraction.
+- Why: works with no model configured, keeps the resume on the machine by default, and every parsed field goes through a mandatory review screen. Fields the parser is unsure of stay empty.
+
+## D10 Weak guesses are not hints
+- Matches under 0.60 confidence are dropped to "unknown" before deciding. Otherwise a user answer typed for a weakly-matched question would be saved under the wrong canonical question and reused on other sites.
+
+## D11 Bundle size
+- The Anthropic SDK makes background.js about 1 MB, and pdf.js plus mammoth make the side panel about 1.5 MB. Acceptable for a locally installed extension; nothing is downloaded at runtime.

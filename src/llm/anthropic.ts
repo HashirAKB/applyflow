@@ -3,7 +3,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { LlmError, type CompletionRequest, type LlmProvider } from './provider';
 
-export const ANTHROPIC_DEFAULT_MODEL = 'claude-opus-5-5';
+import { ANTHROPIC_DEFAULT_MODEL } from './models';
 
 export function anthropicProvider(apiKey: string, model = ANTHROPIC_DEFAULT_MODEL): LlmProvider {
   // dangerouslyAllowBrowser: the key belongs to the user and never leaves their machine except to Anthropic.

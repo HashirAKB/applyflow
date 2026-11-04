@@ -6,7 +6,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [x] M2 form engine + generic adapter
 - [x] M3 answer bank + matching + eval
 - [x] M4 Greenhouse/Lever/Ashby/Workable adapters + e2e
-- [ ] M5 side panel UI + onboarding/resume import
+- [x] M5 side panel UI + onboarding/resume import
 - [ ] M6 tracker
 - [ ] M7 LinkedIn/Naukri adapters
 - [ ] M8 auto-submit with safeguards

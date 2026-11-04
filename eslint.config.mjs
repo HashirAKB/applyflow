@@ -16,7 +16,7 @@ export default tseslint.config(
   },
   {
     files: ['scripts/**', 'eval/**', 'tests/**', '*.config.*'],
-    languageOptions: { globals: { process: 'readonly', console: 'readonly', URL: 'readonly' } },
+    languageOptions: { globals: { process: 'readonly', console: 'readonly', URL: 'readonly', document: 'readonly', getComputedStyle: 'readonly' } },
     rules: { 'no-console': 'off' },
   },
 );

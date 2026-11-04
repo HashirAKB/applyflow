@@ -134,7 +134,11 @@ export interface DecideData {
 }
 
 /** Turn a match into a fill/ask/skip decision with the exact value to write. */
-export function decide(field: FieldDescriptor, match: Match, data: DecideData): FieldDecision {
+/** Below this, a match is not even shown as a hint, and answers are saved as a new question instead. */
+export const HINT_FLOOR = 0.6;
+
+export function decide(field: FieldDescriptor, rawMatch: Match, data: DecideData): FieldDecision {
+  const match = rawMatch.confidence < HINT_FLOOR ? NO_MATCH : rawMatch;
   const base = { fieldId: field.id, questionId: match.questionId, confidence: match.confidence, method: match.method };
   const ask = (reason: string, value: string | null = null): FieldDecision => ({ ...base, value, action: 'ask', reason });
 

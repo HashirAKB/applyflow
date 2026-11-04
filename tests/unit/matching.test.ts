@@ -105,7 +105,11 @@ describe('decide', () => {
   });
 
   it('never fills below the threshold, but suggests the value', () => {
-    expect(decide(field('x'), rule('notice_period', 0.6), data)).toMatchObject({ action: 'ask', value: '30 days' });
+    expect(decide(field('x'), rule('notice_period', 0.7), data)).toMatchObject({ action: 'ask', value: '30 days' });
+  });
+
+  it('treats weak guesses as unknown so answers are not saved under the wrong question', () => {
+    expect(decide(field('Which timezone?'), rule('why_company', 0.25), data)).toMatchObject({ action: 'ask', questionId: null, reason: 'Unknown question' });
   });
 
   it('asks for unknown questions, missing answers and written answers', () => {
