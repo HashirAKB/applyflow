@@ -48,7 +48,7 @@ export type TabRequest =
   | { type: 'setField'; fieldId: string; value: string; resume: ResumeFile | null }
   | { type: 'submit'; dryRun: boolean }
   | { type: 'next' }
-  | { type: 'diagnose' };
+  | { type: 'diagnose'; secrets: string[] };
 
 export interface JobInfo {
   company: string;

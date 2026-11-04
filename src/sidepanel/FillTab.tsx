@@ -59,6 +59,21 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
     }
   }
 
+  async function exportDiagnostics() {
+    try {
+      const report = await send<{ site: string }>({ type: 'diagnostics', tabId: await currentTabId() });
+      const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `applyflow-report-${report.site}-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setError('');
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function allow() {
     // Must run inside the click handler: Chrome only shows the permission prompt for a user gesture.
     const granted = await chrome.permissions.request({ origins: [`${needsOrigin}/*`] });
@@ -78,6 +93,11 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
         {busy ? 'Reading the form...' : report ? 'Scan again' : 'Scan and fill this page'}
       </button>
       <p className="hint">Fields are filled only when applyflow is at least {Math.round(state.settings.threshold * 100)}% sure. Everything else is listed here for you.</p>
+      {report && (
+        <button className="small" onClick={exportDiagnostics}>
+          Report a broken site
+        </button>
+      )}
       {needsOrigin && (
         <div className="card warn">
           <p>applyflow needs your permission to read forms on {needsOrigin}.</p>

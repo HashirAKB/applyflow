@@ -8,6 +8,7 @@ import type { SiteAdapter } from './adapters/types';
 import { detectFields, findBlockers, type DetectedField } from './detect';
 import { fillField } from './fill';
 import { clearHighlights, highlight } from './highlight';
+import { redactTree } from '../core/redact';
 
 declare global {
   interface Window {
@@ -81,6 +82,14 @@ function submit(dryRun: boolean): { clicked: boolean; found: boolean } {
   return { clicked: true, found: true };
 }
 
+/** Redacted copy of the form (or the page when no form was found) for a bug report. */
+function diagnose(secrets: string[]): string {
+  const source = root ?? document.body;
+  const clone = source.cloneNode(true) as HTMLElement;
+  redactTree(clone, secrets);
+  return clone.outerHTML;
+}
+
 function next(): boolean {
   const btn = root && adapter ? adapter.nextButton(root) : null;
   btn?.click();
@@ -105,8 +114,10 @@ if (!window.__applyflowLoaded) {
           return submit(msg.dryRun);
         case 'next':
           return next();
+        case 'diagnose':
+          return diagnose(msg.secrets);
         default:
-          throw new Error(`Unknown request ${msg.type}`);
+          throw new Error(`Unknown request ${(msg as { type: string }).type}`);
       }
     };
     Promise.resolve()

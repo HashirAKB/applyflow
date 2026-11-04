@@ -4,6 +4,7 @@ import type { Request, State } from '../core/messages';
 import type { Store } from '../storage/store';
 import { answerField, fillTab, generate, nextStep } from './fill';
 import { autoApply } from './autosubmit';
+import { diagnostics } from './diagnostics';
 
 export async function handle(store: Store, msg: Request, _sender: chrome.runtime.MessageSender): Promise<unknown> {
   switch (msg.type) {
@@ -33,6 +34,8 @@ export async function handle(store: Store, msg: Request, _sender: chrome.runtime
     case 'killSwitch':
       await store.update('settings', (s) => ({ ...s, autoSubmit: { ...s.autoSubmit, enabled: false } }));
       return getState(store);
+    case 'diagnostics':
+      return diagnostics(store, msg.tabId);
     case 'generate':
       return generate(store, msg.tabId, msg.field);
     case 'answerField':
