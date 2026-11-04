@@ -20,7 +20,7 @@ Decisions made without the owner, with alternatives and reasons.
 ## D5 Anthropic provider uses the official SDK; OpenAI-compatible uses fetch
 - Alternatives: raw fetch for both; an OpenAI-compatible shim for Anthropic.
 - Why: the SDK gives typed requests and error classes and keeps up with API changes. The OpenAI-compatible provider is a single POST that also serves Groq, Ollama and LM Studio, so a dependency is not worth it there.
-- Default Anthropic model `claude-opus-5-5` with `effort: low` for classification; the user can change the model in settings. Server-side refusal fallback is enabled.
+- No built-in default model: the user enters the model id for either provider, so the extension never silently picks a model (and its price) for them. Classification requests use `effort: low`, drafting `medium`. Server-side refusal fallback is enabled for Anthropic.
 
 ## D6 Mock LLM is a concept lexicon
 - Alternatives: echoing the expected answer (meaningless), recorded real-model replies (needs a key and goes stale).

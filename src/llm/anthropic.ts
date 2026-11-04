@@ -3,9 +3,9 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { LlmError, type CompletionRequest, type LlmProvider } from './provider';
 
-import { ANTHROPIC_DEFAULT_MODEL } from './models';
 
-export function anthropicProvider(apiKey: string, model = ANTHROPIC_DEFAULT_MODEL): LlmProvider {
+/** `model` is the model id the user chose in settings; there is deliberately no built-in default. */
+export function anthropicProvider(apiKey: string, model: string): LlmProvider {
   // dangerouslyAllowBrowser: the key belongs to the user and never leaves their machine except to Anthropic.
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true, maxRetries: 1 });
   return {

@@ -77,7 +77,7 @@ On 196 labelled form questions ([eval/questions.tsv](eval/questions.tsv), result
 | Rules + fuzzy | 85.2% | 99.4% | 91.0% | 16.8% |
 | Rules + fuzzy + mock LLM | 89.8% | 98.2% | 93.3% | 13.8% |
 
-Precision at threshold is the number that matters for trust: of the fields filled without asking, how many were mapped correctly. The fuzzy row's lower accuracy comes from low-confidence guesses on questions that have no canonical match; those are still sent to the user, so precision is unchanged. The mock LLM is a deterministic stand-in (a concept lexicon) used to test the pipeline offline, not a real model; run `EVAL_PROVIDER=anthropic ANTHROPIC_API_KEY=... npm run eval` to add a real-model row.
+Precision at threshold is the number that matters for trust: of the fields filled without asking, how many were mapped correctly. The fuzzy row's lower accuracy comes from low-confidence guesses on questions that have no canonical match; those are still sent to the user, so precision is unchanged. The mock LLM is a deterministic stand-in (a concept lexicon) used to test the pipeline offline, not a real model; run `EVAL_PROVIDER=anthropic EVAL_MODEL=<model id> ANTHROPIC_API_KEY=... npm run eval` to add a real-model row.
 
 ## Auto-submit and its safeguards
 

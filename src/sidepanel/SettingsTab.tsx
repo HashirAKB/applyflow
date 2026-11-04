@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { LlmProviderName, Settings } from '../core/types';
 import type { State } from '../core/messages';
-import { ANTHROPIC_DEFAULT_MODEL } from '../llm/models';
 import { send } from './api';
 import { AutoSubmitSettings } from './AutoSubmitSettings';
 
@@ -95,7 +94,7 @@ export function SettingsTab({ state, onSaved }: { state: State; onSaved: (s: Sta
             <input
               value={s.llm.model}
               onChange={(e) => setS({ ...s, llm: { ...s.llm, model: e.target.value } })}
-              placeholder={s.llm.provider === 'anthropic' ? ANTHROPIC_DEFAULT_MODEL : 'gpt-4o-mini / llama3.1'}
+              placeholder="Model id from your provider's documentation"
             />
           </label>
           <label>

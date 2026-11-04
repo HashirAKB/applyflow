@@ -9,7 +9,7 @@ export function providerFor(settings: Settings, secrets: Secrets): LlmProvider |
   const { provider, baseUrl, model } = settings.llm;
   switch (provider) {
     case 'anthropic':
-      return secrets.llmApiKey ? anthropicProvider(secrets.llmApiKey, model || undefined) : null;
+      return secrets.llmApiKey && model ? anthropicProvider(secrets.llmApiKey, model) : null;
     case 'openai':
       return model ? openaiCompatibleProvider(baseUrl, secrets.llmApiKey, model) : null;
     case 'mock':

@@ -1,5 +1,5 @@
 // Matching eval. Usage: npm run eval  (writes eval/results.md, exits 1 if precision drops below 0.95)
-// Optional: EVAL_PROVIDER=anthropic ANTHROPIC_API_KEY=... npm run eval  adds a real-model row.
+// Optional: EVAL_PROVIDER=anthropic EVAL_MODEL=<model id> ANTHROPIC_API_KEY=... npm run eval  adds a real-model row.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { matchField, type MatchOptions } from '../src/core/matching';
 import { defaultSettings } from '../src/core/types';
@@ -62,7 +62,7 @@ const rows: Row[] = [
   await run('Rules + fuzzy', { stages: { llm: false } }),
   await run('Rules + fuzzy + mock LLM', { llm: mockProvider() }),
 ];
-if (process.env.EVAL_PROVIDER === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
+if (process.env.EVAL_PROVIDER === 'anthropic' && process.env.ANTHROPIC_API_KEY && process.env.EVAL_MODEL) {
   const llm: LlmProvider = anthropicProvider(process.env.ANTHROPIC_API_KEY, process.env.EVAL_MODEL);
   rows.push(await run('Rules + fuzzy + Anthropic', { llm }));
 }
