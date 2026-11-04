@@ -42,8 +42,31 @@ export type TabRequest =
   | { type: 'ping' }
   | { type: 'scan' }
   | { type: 'apply'; decisions: FieldDecision[]; resume: ResumeFile | null }
-  | { type: 'setField'; fieldId: string; value: string }
+  | { type: 'setField'; fieldId: string; value: string; resume: ResumeFile | null }
   | { type: 'submit'; dryRun: boolean }
+  | { type: 'next' }
   | { type: 'diagnose' };
+
+export interface JobInfo {
+  company: string;
+  role: string;
+  description: string;
+}
+
+export interface ScanResult {
+  site: string;
+  siteName: string;
+  url: string;
+  fields: FieldDescriptor[];
+  job: JobInfo;
+  /** 'captcha' and/or 'login'. Any blocker hands control to the user. */
+  blockers: string[];
+  hasNext: boolean;
+  hasSubmit: boolean;
+}
+
+export interface ApplyResult {
+  decisions: FieldDecision[];
+}
 
 export type Response<T> = { ok: true; result: T } | { ok: false; error: string };
