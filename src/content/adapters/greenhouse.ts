@@ -6,7 +6,7 @@ import { buttonByText, clip, textOf } from './common';
 export const greenhouse: SiteAdapter = {
   id: 'greenhouse',
   name: 'Greenhouse',
-  verification: 'fixture-tested',
+  verification: 'live-tested',
   matches: (url) => /(^|\.)greenhouse\.io$/.test(url.hostname),
   formRoot: (doc) => doc.querySelector<HTMLElement>('form#application-form, form.application--form, form#application_form'),
   jobInfo(doc) {

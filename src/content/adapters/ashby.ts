@@ -9,7 +9,7 @@ const ENTRY = '.ashby-application-form-field-entry';
 export const ashby: SiteAdapter = {
   id: 'ashby',
   name: 'Ashby',
-  verification: 'fixture-tested',
+  verification: 'live-tested',
   matches: (url) => url.hostname === 'jobs.ashbyhq.com',
   formRoot: (doc) =>
     doc.querySelector<HTMLElement>('.ashby-application-form-container') ??

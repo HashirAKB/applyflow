@@ -5,7 +5,7 @@ import { buttonByText, clip, meta, textOf } from './common';
 export const lever: SiteAdapter = {
   id: 'lever',
   name: 'Lever',
-  verification: 'fixture-tested',
+  verification: 'live-tested',
   matches: (url) => url.hostname === 'jobs.lever.co',
   formRoot: (doc) => doc.querySelector<HTMLElement>('form#application-form, form.application-form'),
   // Lever wraps each control in a <label> that also contains upload status text; the question
