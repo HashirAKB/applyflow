@@ -49,3 +49,7 @@ Decisions made without the owner, with alternatives and reasons.
 - Auto-submit never runs on the generic adapter: an unknown site cannot be trusted to have a recognisable final step.
 - The usage counter is incremented before the submit click so a crash after clicking cannot permit an extra submission.
 - The pause between automated clicks is pacing (no faster than a person), not concealment. No stealth or anti-detection measures exist anywhere in the code.
+
+## D13 Releases are published by the repository's own workflow
+- The build session's git proxy refused tag pushes (HTTP 403), so the release cannot be created by pushing a tag from here.
+- `release.yml` runs on version tags and on manual dispatch; a manual run tags the commit with the package.json version and attaches `applyflow.zip`. CI also uploads the zip as an artifact on every push.

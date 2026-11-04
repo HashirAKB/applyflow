@@ -21,7 +21,7 @@ applyflow is a Chrome extension (Manifest V3) for job seekers. Open an applicati
 3. Open `chrome://extensions` and switch on **Developer mode** (top right).
 4. Click **Load unpacked**, choose the unzipped folder, then pin applyflow and click its icon to open the side panel.
 
-Requires Chrome 116 or newer. To build from source instead: `npm ci && npm run build`, then load the `dist/` folder.
+Requires Chrome 116 or newer. Every CI run also uploads the same zip as the `applyflow-extension` artifact. To build from source instead: `npm ci && npm run build`, then load the `dist/` folder.
 
 ## How it works
 

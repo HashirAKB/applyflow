@@ -3,6 +3,8 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # Manual release from the Actions tab: tags the current commit with the package.json version.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,7 +21,11 @@ jobs:
       - run: npm ci
       - run: npm run lint && npm run typecheck && npm test
       - run: npm run package
+      - id: version
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           files: applyflow.zip
           generate_release_notes: true
