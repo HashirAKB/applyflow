@@ -29,10 +29,13 @@ export async function fillTab(store: Store, tabId: number): Promise<FillReport> 
 
   const decisions: FieldDecision[] = [];
   for (const field of scan.fields) {
-    const match = await matchField(field, { answers, threshold: settings.threshold, llm });
+    // Pre-filled fields are never changed, so do not spend matching (or an LLM call) on them.
+    const match = field.hasValue ? { questionId: null, confidence: 0, method: 'none' as const } : await matchField(field, { answers, threshold: settings.threshold, llm });
     decisions.push(decide(field, match, data));
   }
-  const applied = await tabSend<ApplyResult>(tabId, { type: 'apply', decisions, resume });
+  // The resume file goes to the page only when a resume field is actually being filled.
+  const needsResume = decisions.some((d) => d.action === 'fill' && d.value === 'resume');
+  const applied = await tabSend<ApplyResult>(tabId, { type: 'apply', decisions, resume: needsResume ? resume : null });
 
   // Log the application with the answers actually written to the page.
   const labels = new Map(scan.fields.map((f) => [f.id, f.label]));
