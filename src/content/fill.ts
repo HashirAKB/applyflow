@@ -141,6 +141,13 @@ export async function fillField(field: DetectedField, value: string, resume: Res
       return true;
     }
     default:
+      if (el.getAttribute('contenteditable') === 'true') {
+        // Rich text boxes (Naukri chatbot): set the text and announce it like typing would.
+        el.focus();
+        el.textContent = value;
+        el.dispatchEvent(new InputEvent('input', { bubbles: true, data: value, inputType: 'insertText' }));
+        return true;
+      }
       setText(el as HTMLInputElement, value);
       return true;
   }

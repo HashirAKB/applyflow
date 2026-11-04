@@ -55,3 +55,4 @@ button:disabled { opacity: 0.6; cursor: default; }
 .sticky { position: sticky; bottom: 0; background: var(--bg); padding: 8px 0; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 td, th { text-align: left; padding: 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.warn-text { color: var(--warn); margin-top: 4px; }

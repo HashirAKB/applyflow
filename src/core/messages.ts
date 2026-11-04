@@ -22,6 +22,7 @@ export type Request =
   | { type: 'disableEncryption' }
   | { type: 'match'; fields: FieldDescriptor[] }
   | { type: 'fillTab'; tabId: number }
+  | { type: 'nextStep'; tabId: number }
   | { type: 'answerField'; tabId: number; field: FieldDescriptor; questionId: string | null; value: string; remember: boolean }
   | { type: 'generate'; tabId: number; field: FieldDescriptor }
   | { type: 'diagnostics'; tabId: number };
@@ -63,6 +64,9 @@ export interface ScanResult {
   blockers: string[];
   hasNext: boolean;
   hasSubmit: boolean;
+  /** Clicking next may complete the application (Naukri chatbot). */
+  nextMaySubmit: boolean;
+  verification: 'live-tested' | 'fixture-tested' | 'unverified';
 }
 
 export interface ApplyResult {

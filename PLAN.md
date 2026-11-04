@@ -8,7 +8,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [x] M4 Greenhouse/Lever/Ashby/Workable adapters + e2e
 - [x] M5 side panel UI + onboarding/resume import
 - [x] M6 tracker
-- [ ] M7 LinkedIn/Naukri adapters
+- [x] M7 LinkedIn/Naukri adapters
 - [ ] M8 auto-submit with safeguards
 - [ ] M9 truthfulness guard + cover letter generation
 - [ ] M10 diagnostics

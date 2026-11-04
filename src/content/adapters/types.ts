@@ -18,4 +18,6 @@ export interface SiteAdapter extends DetectHooks {
   submitButton(root: HTMLElement): HTMLElement | null;
   /** "Next" / "Continue" button on multi-step flows. */
   nextButton(root: HTMLElement): HTMLElement | null;
+  /** True when clicking "next" can complete the application (Naukri's chatbot Save). Auto-submit then gates it like submit. */
+  nextMaySubmit?: boolean;
 }

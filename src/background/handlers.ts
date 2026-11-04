@@ -2,7 +2,7 @@
 
 import type { Request, State } from '../core/messages';
 import type { Store } from '../storage/store';
-import { answerField, fillTab } from './fill';
+import { answerField, fillTab, nextStep } from './fill';
 
 export async function handle(store: Store, msg: Request, _sender: chrome.runtime.MessageSender): Promise<unknown> {
   switch (msg.type) {
@@ -25,6 +25,8 @@ export async function handle(store: Store, msg: Request, _sender: chrome.runtime
       return getState(store);
     case 'fillTab':
       return fillTab(store, msg.tabId);
+    case 'nextStep':
+      return nextStep(store, msg.tabId);
     case 'answerField':
       return answerField(store, msg.tabId, msg.field, msg.questionId, msg.value, msg.remember);
     default:

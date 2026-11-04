@@ -1,0 +1,110 @@
+<!-- Synthetic LinkedIn Easy Apply page (LinkedIn requires login, so nothing here is captured).
+     Built from the Easy Apply DOM patterns documented by open-source tooling: the
+     jobs-easy-apply-modal dialog, fb-dash-form-element fields, artdeco labels, form-builder radio
+     fieldsets, and the "Continue to next step" / "Review your application" / "Submit application"
+     buttons. A small script swaps steps the way the real modal does. Job and company are fictional. -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>(3) Platform Engineer | Orbital Freight | LinkedIn</title></head>
+<body>
+  <main class="scaffold-layout__main">
+    <div class="job-details-jobs-unified-top-card__container--two-pane">
+      <h1 class="t-24 job-details-jobs-unified-top-card__job-title">Platform Engineer</h1>
+      <div class="job-details-jobs-unified-top-card__company-name"><a href="#">Orbital Freight</a></div>
+    </div>
+    <div id="job-details" class="jobs-description__content">
+      <h2>About the job</h2>
+      <p>Orbital Freight is hiring a Platform Engineer to run Kubernetes clusters on AWS and build TypeScript tooling.</p>
+    </div>
+  </main>
+
+  <div class="artdeco-modal jobs-easy-apply-modal" role="dialog" data-test-modal aria-labelledby="jobs-apply-header">
+    <h2 id="jobs-apply-header">Apply to Orbital Freight</h2>
+    <div class="jobs-easy-apply-content">
+      <progress max="100" value="0" aria-label="Your job application progress is at 0 percent."></progress>
+      <form>
+        <!-- Step 1: contact info. LinkedIn prefills email from the account. -->
+        <div class="jobs-easy-apply-form-section__grouping" data-step="1">
+          <h3>Contact info</h3>
+          <div class="fb-dash-form-element">
+            <label for="single-line-text-form-component-first" class="artdeco-text-input--label">First name</label>
+            <input id="single-line-text-form-component-first" class="artdeco-text-input--input" type="text" required aria-required="true" value="">
+          </div>
+          <div class="fb-dash-form-element">
+            <label for="single-line-text-form-component-last" class="artdeco-text-input--label">Last name</label>
+            <input id="single-line-text-form-component-last" class="artdeco-text-input--input" type="text" required aria-required="true" value="">
+          </div>
+          <div class="fb-dash-form-element" data-test-text-entity-list-form-component>
+            <label for="text-entity-list-form-component-email" class="fb-dash-form-element__label"><span aria-hidden="true">Email address</span></label>
+            <select id="text-entity-list-form-component-email" data-test-text-entity-list-form-select required aria-required="true">
+              <option value="Select an option">Select an option</option>
+              <option value="prefilled@example.com" selected>prefilled@example.com</option>
+            </select>
+          </div>
+          <div class="fb-dash-form-element">
+            <label for="single-line-text-form-component-phone" class="artdeco-text-input--label">Mobile phone number</label>
+            <input id="single-line-text-form-component-phone" class="artdeco-text-input--input" type="text" required aria-required="true" value="">
+          </div>
+        </div>
+
+        <!-- Step 2: additional questions -->
+        <div class="jobs-easy-apply-form-section__grouping" data-step="2" style="display:none">
+          <h3>Additional Questions</h3>
+          <div class="fb-dash-form-element">
+            <label for="single-line-text-form-component-years-k8s" class="artdeco-text-input--label">How many years of work experience do you have with Kubernetes?</label>
+            <input id="single-line-text-form-component-years-k8s" class="artdeco-text-input--input" type="text" required aria-required="true" value="">
+          </div>
+          <fieldset data-test-form-builder-radio-button-form-component="true" aria-required="true">
+            <legend><span class="fb-dash-form-element__label" aria-hidden="true">Will you now, or in the future, require sponsorship for employment visa status?</span></legend>
+            <div data-test-text-selectable-option="0"><input type="radio" id="spons-yes" name="sponsorship" value="Yes"><label for="spons-yes">Yes</label></div>
+            <div data-test-text-selectable-option="1"><input type="radio" id="spons-no" name="sponsorship" value="No"><label for="spons-no">No</label></div>
+          </fieldset>
+          <div class="fb-dash-form-element">
+            <label for="text-entity-list-form-component-relocate" class="fb-dash-form-element__label"><span>Are you comfortable commuting to this job's location?</span></label>
+            <select id="text-entity-list-form-component-relocate" required aria-required="true">
+              <option>Select an option</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="fb-dash-form-element">
+            <label for="single-line-text-form-component-salary" class="artdeco-text-input--label">What is your expected salary?</label>
+            <input id="single-line-text-form-component-salary" class="artdeco-text-input--input" type="text" value="">
+          </div>
+        </div>
+
+        <!-- Step 3: review -->
+        <div class="jobs-easy-apply-form-section__grouping" data-step="3" style="display:none">
+          <h3>Review your application</h3>
+          <p>The employer will also receive a copy of your profile.</p>
+        </div>
+
+        <footer>
+          <button type="button" aria-label="Continue to next step" class="artdeco-button artdeco-button--primary" data-easy-apply-next-button><span>Next</span></button>
+          <button type="button" aria-label="Review your application" class="artdeco-button artdeco-button--primary" style="display:none"><span>Review</span></button>
+          <button type="button" aria-label="Submit application" class="artdeco-button artdeco-button--primary" style="display:none"><span>Submit application</span></button>
+        </footer>
+      </form>
+    </div>
+  </div>
+  <div id="submitted" style="display:none">Your application was sent to Orbital Freight.</div>
+  <script>
+    (function () {
+      let step = 1;
+      const q = (s) => document.querySelector(s);
+      const show = () => {
+        document.querySelectorAll('[data-step]').forEach((el) => (el.style.display = Number(el.dataset.step) === step ? '' : 'none'));
+        q('[aria-label="Continue to next step"]').style.display = step === 1 ? '' : 'none';
+        q('[aria-label="Review your application"]').style.display = step === 2 ? '' : 'none';
+        q('[aria-label="Submit application"]').style.display = step === 3 ? '' : 'none';
+        q('progress').value = (step - 1) * 50;
+      };
+      q('[aria-label="Continue to next step"]').addEventListener('click', () => { step = 2; show(); });
+      q('[aria-label="Review your application"]').addEventListener('click', () => { step = 3; show(); });
+      q('[aria-label="Submit application"]').addEventListener('click', () => {
+        window.__submitted = (window.__submitted || 0) + 1;
+        q('.jobs-easy-apply-modal').style.display = 'none';
+        q('#submitted').style.display = '';
+      });
+    })();
+  </script>
+</body>
+</html>

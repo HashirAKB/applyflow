@@ -34,6 +34,8 @@ function scan(): ScanResult {
     blockers: findBlockers(document),
     hasNext: !!(root && adapter.nextButton(root)),
     hasSubmit: !!(root && adapter.submitButton(root)),
+    nextMaySubmit: !!adapter.nextMaySubmit,
+    verification: adapter.verification,
   };
 }
 

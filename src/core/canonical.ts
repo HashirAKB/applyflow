@@ -113,7 +113,7 @@ export const CATALOGUE: CanonicalQuestion[] = [
     label: 'Remote / hybrid / onsite preference',
     category: 'logistics',
     synonyms: ['comfortable working from the office', 'work model preference', 'able to work onsite'],
-    patterns: [/\b(remote|hybrid|on ?site|in office|in person|from the office|work model|work arrangement)\b/],
+    patterns: [/\b(remote|hybrid|on ?site|in office|in person|from the office|work model|work arrangement|commut(e|ing))\b/],
     source: 'answer',
   },
   {

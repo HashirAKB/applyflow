@@ -24,12 +24,12 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
   const [error, setError] = useState('');
   const [needsOrigin, setNeedsOrigin] = useState('');
 
-  async function scan() {
+  async function scan(type: 'fillTab' | 'nextStep' = 'fillTab') {
     setBusy(true);
     setError('');
     setNeedsOrigin('');
     try {
-      setReport(await send<FillReport>({ type: 'fillTab', tabId: await currentTabId() }));
+      setReport(await send<FillReport>({ type, tabId: await currentTabId() }));
       onChange();
     } catch (e) {
       const msg = (e as Error).message;
@@ -56,7 +56,7 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
 
   return (
     <div>
-      <button className="primary wide" onClick={scan} disabled={busy}>
+      <button className="primary wide" onClick={() => scan()} disabled={busy}>
         {busy ? 'Reading the form...' : report ? 'Scan again' : 'Scan and fill this page'}
       </button>
       <p className="hint">Fields are filled only when applyflow is at least {Math.round(state.settings.threshold * 100)}% sure. Everything else is listed here for you.</p>
@@ -77,6 +77,9 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
             <div className="muted">
               {report.scan.siteName} | {filled.length} filled, {ask.length} need you, {skipped.length} already filled
             </div>
+            {report.scan.verification === 'unverified' && (
+              <div className="small warn-text">This site adapter is unverified: built from documented page structure, not yet confirmed on the live site. Check every field.</div>
+            )}
           </div>
           {report.scan.blockers.map((b) => (
             <p key={b} className="card warn">
@@ -86,8 +89,13 @@ export function FillTab({ state, onChange }: { state: State; onChange: () => voi
           {report.scan.fields.length === 0 && <p className="card warn">No form fields found. If this is a multi-step form, open the step with questions and scan again.</p>}
           {ask.length > 0 && <h2>Needs you ({ask.length})</h2>}
           {ask.map((d) => (
-            <AskField key={d.fieldId} decision={d} field={fieldById.get(d.fieldId)!} onDone={scan} />
+            <AskField key={d.fieldId} decision={d} field={fieldById.get(d.fieldId)!} onDone={() => scan()} />
           ))}
+          {report.scan.hasNext && (
+            <button className="wide" onClick={() => scan('nextStep')} disabled={busy || ask.some((d) => fieldById.get(d.fieldId)?.required)}>
+              {report.scan.nextMaySubmit ? 'Save answer and continue (the last one completes the application)' : 'Next step and fill'}
+            </button>
+          )}
           {filled.length > 0 && <h2>Filled ({filled.length})</h2>}
           <ul className="filled">
             {filled.map((d) => (

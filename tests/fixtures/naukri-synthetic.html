@@ -1,0 +1,78 @@
+<!-- Synthetic Naukri apply page (Naukri requires login, so nothing here is captured).
+     Built from the documented Naukri apply flow: the job header (.styles_jd-header-title__,
+     .styles_jd-header-comp-name__), the job description section, and the recruiter questions
+     chatbot drawer that asks one question at a time with either a contenteditable text box or
+     radio chips, plus a Save button. Job and company are fictional. -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Senior Node.js Developer - Pinecrest Software - 5 to 8 years of experience | Naukri.com</title></head>
+<body>
+  <section class="styles_job-header-container___0wLZ">
+    <h1 class="styles_jd-header-title__rZwM1" title="Senior Node.js Developer">Senior Node.js Developer</h1>
+    <div class="styles_jd-header-comp-name__MvqAI"><a title="Pinecrest Software Careers">Pinecrest Software</a></div>
+  </section>
+  <section class="styles_job-desc-container__txpYf">
+    <div class="styles_JDC__dang-inner-html__h0K4t">Pinecrest Software builds payments APIs. You will own Node.js and TypeScript services on AWS.</div>
+  </section>
+
+  <div class="chatbot_DrawerContentWrapper">
+    <div class="chatbot_Drawer">
+      <div class="chatbot_ListContainer">
+        <ul>
+          <li class="botItem chatbot_ListItem"><div class="botMsg msg"><div><span>Hi Ada, thank you for showing interest. Kindly answer all the recruiter's questions to successfully apply for the job.</span></div></div></li>
+          <li class="botItem chatbot_ListItem"><div class="botMsg msg"><div><span id="q1">What is your notice period?</span></div></div></li>
+        </ul>
+      </div>
+      <div class="chatbot_InputContainer">
+        <div class="ssrc__radio-btn-container" style="display:none"></div>
+        <div class="textAreaWrapper">
+          <div class="textArea" contenteditable="true" role="textbox" data-placeholder="Type message here..." id="userInput__f9ndj8bujInputBox"></div>
+        </div>
+        <div class="sendMsgbtn_container"><div class="sendMsg" role="button" tabindex="0">Save</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="applied" style="display:none">You have successfully applied to this job.</div>
+  <script>
+    (function () {
+      const questions = [
+        { text: 'What is your notice period?', type: 'text' },
+        { text: 'Are you willing to relocate to Pune?', type: 'radio', options: ['Yes', 'No'] },
+        { text: 'What is your current CTC?', type: 'text' },
+      ];
+      let i = 0;
+      const list = document.querySelector('.chatbot_ListContainer ul');
+      const box = document.querySelector('.textArea');
+      const radios = document.querySelector('.ssrc__radio-btn-container');
+      window.__answers = [];
+      function render() {
+        const q = questions[i];
+        if (i > 0) list.insertAdjacentHTML('beforeend', `<li class="botItem chatbot_ListItem"><div class="botMsg msg"><div><span>${q.text}</span></div></div></li>`);
+        if (q.type === 'radio') {
+          box.parentElement.style.display = 'none';
+          radios.style.display = '';
+          radios.innerHTML = q.options.map((o, j) => `<div class="ssrc__radio-btn"><input type="radio" class="ssrc__radio" id="r${i}${j}" name="q${i}" value="${o}"><label for="r${i}${j}" class="ssrc__label">${o}</label></div>`).join('');
+        } else {
+          box.parentElement.style.display = '';
+          radios.style.display = 'none';
+          radios.innerHTML = '';
+        }
+      }
+      document.querySelector('.sendMsg').addEventListener('click', () => {
+        const q = questions[i];
+        const answer = q.type === 'radio' ? (radios.querySelector('input:checked') || {}).value : box.textContent.trim();
+        if (!answer) return;
+        window.__answers.push(answer);
+        list.insertAdjacentHTML('beforeend', `<li class="userItem chatbot_ListItem"><div class="userMsg msg">${answer}</div></li>`);
+        box.textContent = '';
+        i++;
+        if (i < questions.length) render();
+        else {
+          document.querySelector('.chatbot_DrawerContentWrapper').style.display = 'none';
+          document.getElementById('applied').style.display = '';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

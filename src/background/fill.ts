@@ -47,6 +47,15 @@ export async function fillTab(store: Store, tabId: number): Promise<FillReport> 
   return { scan, decisions: applied.decisions };
 }
 
+/** User asked to move to the next step: click the site's own Next button, let it render, fill again. */
+export async function nextStep(store: Store, tabId: number): Promise<FillReport> {
+  await ensureContentScript(tabId);
+  await tabSend<ScanResult>(tabId, { type: 'scan' });
+  if (!(await tabSend<boolean>(tabId, { type: 'next' }))) throw new Error('No next button found on this step.');
+  await new Promise((r) => setTimeout(r, 800));
+  return fillTab(store, tabId);
+}
+
 /** The user answered a field in the side panel: write it to the page and (optionally) remember it. */
 export async function answerField(
   store: Store,

@@ -96,3 +96,30 @@ describe.each(CASES)('%s', (fixture, url, adapterId, job, expected) => {
     expect(new Set(labels).size).toBe(labels.length);
   });
 });
+
+describe('unverified adapters on synthetic fixtures', () => {
+  it('LinkedIn Easy Apply: first step only, prefilled email skipped, next button found', () => {
+    const { adapter, root, fields, job } = load('linkedin-easy-apply-synthetic.html', 'https://www.linkedin.com/jobs/view/123/');
+    expect(adapter.id).toBe('linkedin');
+    expect(adapter.verification).toBe('unverified');
+    expect(job).toMatchObject({ company: 'Orbital Freight', role: 'Platform Engineer' });
+    expect(fields.map((f) => [f.label, f.q, f.hasValue])).toEqual([
+      ['First name', 'first_name', false],
+      ['Last name', 'last_name', false],
+      ['Email address', 'email', true],
+      ['Mobile phone number', 'phone', false],
+    ]);
+    expect(adapter.nextButton(root)?.getAttribute('aria-label')).toBe('Continue to next step');
+    expect(adapter.submitButton(root)).toBeNull();
+  });
+
+  it('Naukri: reads the current chatbot question and its text box', () => {
+    const { adapter, root, fields, job } = load('naukri-synthetic.html', 'https://www.naukri.com/job-listings-senior-node-js-developer-123');
+    expect(adapter.id).toBe('naukri');
+    expect(job).toMatchObject({ company: 'Pinecrest Software', role: 'Senior Node.js Developer' });
+    expect(fields).toHaveLength(1);
+    expect(fields[0]).toMatchObject({ label: 'What is your notice period?', kind: 'text', q: 'notice_period' });
+    expect(adapter.nextMaySubmit).toBe(true);
+    expect(adapter.nextButton(root)?.textContent).toBe('Save');
+  });
+});
