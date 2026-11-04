@@ -23,7 +23,7 @@ function scan(): ScanResult {
   adapter = pickAdapter(new URL(location.href), document);
   root = adapter.formRoot(document);
   clearHighlights(document);
-  const detected = root ? detectFields(root) : [];
+  const detected = root ? detectFields(root, adapter) : [];
   fields = new Map(detected.map((f) => [f.descriptor.id, f]));
   return {
     site: adapter.id,
@@ -37,29 +37,34 @@ function scan(): ScanResult {
   };
 }
 
-function apply(decisions: FieldDecision[], resume: ResumeFile | null): ApplyResult {
-  const out = decisions.map((d) => {
+async function apply(decisions: FieldDecision[], resume: ResumeFile | null): Promise<ApplyResult> {
+  const out: FieldDecision[] = [];
+  // Sequential on purpose: custom dropdowns open one menu at a time.
+  for (const d of decisions) {
     const field = fields.get(d.fieldId);
-    if (!field) return { ...d, action: 'ask' as const, reason: 'Field disappeared from the page' };
-    if (d.action === 'fill' && d.value !== null) {
-      if (fillField(field, d.value, resume)) {
-        highlight(field.elements[0], 'filled', d.confidence);
-        return d;
+    if (!field) {
+      out.push({ ...d, action: 'ask', reason: 'Field disappeared from the page' });
+    } else if (d.action === 'fill' && d.value !== null) {
+      if (await fillField(field, d.value, resume)) {
+        highlight(field.elements[0], 'filled', d.confidence, d.fieldId);
+        out.push(d);
+      } else {
+        highlight(field.elements[0], 'ask', d.confidence, d.fieldId);
+        out.push({ ...d, action: 'ask', reason: 'Saved answer does not match any option on this form' });
       }
-      highlight(field.elements[0], 'ask', d.confidence);
-      return { ...d, action: 'ask' as const, reason: 'Stored answer does not match any option on this form' };
+    } else {
+      if (d.action === 'ask') highlight(field.elements[0], 'ask', d.confidence, d.fieldId);
+      out.push(d);
     }
-    if (d.action === 'ask') highlight(field.elements[0], 'ask', d.confidence);
-    return d;
-  });
+  }
   return { decisions: out };
 }
 
-function setField(fieldId: string, value: string, resume: ResumeFile | null): boolean {
+async function setField(fieldId: string, value: string, resume: ResumeFile | null): Promise<boolean> {
   const field = fields.get(fieldId);
   if (!field) return false;
-  const ok = fillField(field, value, resume);
-  if (ok) highlight(field.elements[0], 'filled', 1);
+  const ok = await fillField(field, value, resume);
+  if (ok) highlight(field.elements[0], 'filled', 1, fieldId);
   return ok;
 }
 
@@ -84,32 +89,28 @@ if (!window.__applyflowLoaded) {
   window.__applyflowLoaded = true;
   chrome.runtime.onMessage.addListener((msg: TabRequest, sender, sendResponse) => {
     if (sender.id !== chrome.runtime.id) return false;
-    try {
+    const run = (): unknown | Promise<unknown> => {
       switch (msg.type) {
         case 'ping':
-          sendResponse({ ok: true, result: 'pong' });
-          break;
+          return 'pong';
         case 'scan':
-          sendResponse({ ok: true, result: scan() });
-          break;
+          return scan();
         case 'apply':
-          sendResponse({ ok: true, result: apply(msg.decisions, msg.resume) });
-          break;
+          return apply(msg.decisions, msg.resume);
         case 'setField':
-          sendResponse({ ok: true, result: setField(msg.fieldId, msg.value, msg.resume) });
-          break;
+          return setField(msg.fieldId, msg.value, msg.resume);
         case 'submit':
-          sendResponse({ ok: true, result: submit(msg.dryRun) });
-          break;
+          return submit(msg.dryRun);
         case 'next':
-          sendResponse({ ok: true, result: next() });
-          break;
+          return next();
         default:
-          return false;
+          throw new Error(`Unknown request ${msg.type}`);
       }
-    } catch (e) {
-      sendResponse({ ok: false, error: e instanceof Error ? e.message : String(e) });
-    }
-    return false;
+    };
+    Promise.resolve()
+      .then(run)
+      .then((result) => sendResponse({ ok: true, result }))
+      .catch((e: unknown) => sendResponse({ ok: false, error: e instanceof Error ? e.message : String(e) }));
+    return true; // async response
   });
 }

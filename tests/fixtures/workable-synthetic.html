@@ -1,0 +1,99 @@
+<!-- Hand-built Workable application page. apply.workable.com returned HTTP 429 to the build sandbox,
+     so this follows Workable's public markup patterns: data-ui hooks, name attributes, a resume
+     dropzone with a hidden file input, custom questions with QA_ names, and a final submit button.
+     Company and job are fictional. See SPEC.md, Deviations. -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Frontend Engineer - Brightline Health</title>
+  <meta property="og:title" content="Frontend Engineer - Brightline Health">
+  <meta property="og:site_name" content="Brightline Health">
+</head>
+<body>
+  <div id="app">
+    <main data-ui="job-page">
+      <header>
+        <h1 data-ui="job-title">Frontend Engineer</h1>
+        <span data-ui="job-location">Remote, India</span>
+      </header>
+      <nav><a data-ui="overview-tab">Overview</a><a data-ui="application-form-tab" aria-selected="true">Application</a></nav>
+      <section data-ui="job-description" style="display:none">
+        <p>Brightline Health builds care-coordination software. You will build React and TypeScript interfaces.</p>
+      </section>
+      <form data-ui="application-form" novalidate>
+        <section data-ui="personal-information">
+          <h2>Personal information</h2>
+          <div data-ui="firstname">
+            <label for="firstname"><span>First name</span><span aria-hidden="true">*</span></label>
+            <input id="firstname" name="firstname" type="text" aria-required="true" value="">
+          </div>
+          <div data-ui="lastname">
+            <label for="lastname"><span>Last name</span><span aria-hidden="true">*</span></label>
+            <input id="lastname" name="lastname" type="text" aria-required="true" value="">
+          </div>
+          <div data-ui="email">
+            <label for="email"><span>Email</span><span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" aria-required="true" value="">
+          </div>
+          <div data-ui="headline">
+            <label for="headline"><span>Headline</span><span>(Optional)</span></label>
+            <input id="headline" name="headline" type="text" value="">
+          </div>
+          <div data-ui="phone">
+            <label for="phone"><span>Phone</span></label>
+            <input id="phone" name="phone" type="tel" value="">
+          </div>
+          <div data-ui="address">
+            <label for="address"><span>Address</span><span>(Optional)</span></label>
+            <input id="address" name="address" type="text" value="">
+          </div>
+        </section>
+        <section data-ui="profile">
+          <h2>Profile</h2>
+          <div data-ui="education"><span>Education</span><button type="button" data-ui="add-section">+ Add</button></div>
+          <div data-ui="resume">
+            <label for="resume"><span>Resume</span></label>
+            <div data-ui="dropzone">
+              <p>Upload a file or drag and drop here</p>
+              <input id="resume" name="resume" type="file" accept=".pdf,.doc,.docx,.odt,.rtf" style="position:absolute;opacity:0;width:1px;height:1px">
+            </div>
+          </div>
+        </section>
+        <section data-ui="details">
+          <h2>Details</h2>
+          <div data-ui="cover_letter">
+            <label for="cover_letter"><span>Cover letter</span><span>(Optional)</span></label>
+            <textarea id="cover_letter" name="cover_letter"></textarea>
+          </div>
+          <div data-ui="QA_10293">
+            <label for="QA_10293"><span>What is your notice period?</span><span aria-hidden="true">*</span></label>
+            <input id="QA_10293" name="QA_10293" type="text" aria-required="true" value="">
+          </div>
+          <div data-ui="QA_10294">
+            <label for="QA_10294"><span>Expected annual salary (INR)</span><span aria-hidden="true">*</span></label>
+            <input id="QA_10294" name="QA_10294" type="text" aria-required="true" value="">
+          </div>
+          <fieldset data-ui="QA_10295">
+            <legend><span>Do you require visa sponsorship to work in India?</span><span aria-hidden="true">*</span></legend>
+            <label><input type="radio" name="QA_10295" value="true"><span>Yes</span></label>
+            <label><input type="radio" name="QA_10295" value="false"><span>No</span></label>
+          </fieldset>
+          <div data-ui="QA_10296">
+            <label for="QA_10296"><span>How many years of experience do you have with React?</span></label>
+            <input id="QA_10296" name="QA_10296" type="number" value="">
+          </div>
+          <div data-ui="QA_10297">
+            <label for="QA_10297"><span>Tell us about an interface you are proud of</span></label>
+            <textarea id="QA_10297" name="QA_10297"></textarea>
+          </div>
+        </section>
+        <div data-ui="gdpr">
+          <label><input type="checkbox" name="gdpr" data-ui="gdpr-checkbox"><span>I agree to the processing of my personal data per the privacy notice</span></label>
+        </div>
+        <button type="submit" data-ui="apply-button">Submit application</button>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

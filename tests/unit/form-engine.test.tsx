@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { act, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { detectFields, findBlockers } from '../../src/content/detect';
-import { fillField, setText } from '../../src/content/fill';
+import { fillCombobox, fillField, setText } from '../../src/content/fill';
 import { generic } from '../../src/content/adapters/generic';
 import { matchOption } from '../../src/core/options';
 
@@ -117,7 +117,7 @@ describe('filling', () => {
     expect(events).toEqual(['input', 'change']);
   });
 
-  it('selects options, radios and checkbox groups by text and refuses unknown values', () => {
+  it('selects options, radios and checkbox groups by text and refuses unknown values', async () => {
     const doc = load(`
       <select aria-label="Country"><option value="">Select</option><option value="in">India</option><option value="de">Germany</option></select>
       <fieldset><legend>Authorised to work?</legend>
@@ -128,27 +128,59 @@ describe('filling', () => {
         <label><input type="checkbox" name="l"> German</label>
         <label><input type="checkbox" name="l"> Hindi</label></fieldset>`);
     const [country, auth, langs] = detectFields(doc.body);
-    expect(fillField(country, 'Germany', null)).toBe(true);
+    expect(await fillField(country, 'Germany', null)).toBe(true);
     expect((country.elements[0] as HTMLSelectElement).value).toBe('de');
-    expect(fillField(country, 'Atlantis', null)).toBe(false);
-    expect(fillField(auth, 'Yes', null)).toBe(true);
+    expect(await fillField(country, 'Atlantis', null)).toBe(false);
+    expect(await fillField(auth, 'Yes', null)).toBe(true);
     expect((auth.elements[0] as HTMLInputElement).checked).toBe(true);
-    expect(fillField(langs, 'English, Hindi', null)).toBe(true);
+    expect(await fillField(langs, 'English, Hindi', null)).toBe(true);
     expect(langs.elements.map((e) => (e as HTMLInputElement).checked)).toEqual([true, false, true]);
   });
 
-  it('attaches a resume file', () => {
+  it('attaches a resume file', async () => {
     const doc = load(`<label for="r">Resume</label><input id="r" type="file">`);
     const [f] = detectFields(doc.body);
     let changed = false;
     f.elements[0].addEventListener('change', () => (changed = true));
     // jsdom lacks DataTransfer; the e2e suite covers the real browser path.
     if (typeof DataTransfer === 'undefined') {
-      expect(fillField(f, 'resume', null)).toBe(false);
+      expect(await fillField(f, 'resume', null)).toBe(false);
       return;
     }
-    expect(fillField(f, 'resume', { name: 'cv.pdf', type: 'application/pdf', base64: btoa('%PDF') })).toBe(true);
+    expect(await fillField(f, 'resume', { name: 'cv.pdf', type: 'application/pdf', base64: btoa('%PDF') })).toBe(true);
     expect(changed).toBe(true);
+  });
+});
+
+describe('combobox', () => {
+  function combobox() {
+    const doc = load(`<label id="l">Country</label><input id="country" role="combobox" aria-labelledby="l" aria-controls="menu"><div id="menu"></div>`);
+    const input = doc.querySelector('input')!;
+    const picked: string[] = [];
+    // Minimal widget: renders options matching what was typed, records the clicked one.
+    input.addEventListener('input', () => {
+      const menu = doc.getElementById('menu')!;
+      menu.innerHTML = ['India', 'Indonesia', 'United Kingdom']
+        .filter((o) => o.toLowerCase().includes(input.value.toLowerCase()))
+        .map((o) => `<div role="option">${o}</div>`)
+        .join('');
+      menu.querySelectorAll('[role=option]').forEach((o) => o.addEventListener('click', () => picked.push(o.textContent!)));
+    });
+    return { field: detectFields(doc.body)[0], picked };
+  }
+
+  it('types, waits for the widget options and clicks the matching one', async () => {
+    const { field, picked } = combobox();
+    expect(field.descriptor.kind).toBe('select');
+    expect(await fillField(field, 'India', null)).toBe(true);
+    expect(picked).toEqual(['India']);
+  });
+
+  it('gives up and clears the text when no option matches', async () => {
+    const { field, picked } = combobox();
+    expect(await fillCombobox(field.elements[0] as HTMLInputElement, 'Atlantis', 300)).toBe(false);
+    expect(picked).toEqual([]);
+    expect((field.elements[0] as HTMLInputElement).value).toBe('');
   });
 });
 

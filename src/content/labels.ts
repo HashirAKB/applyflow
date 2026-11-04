@@ -21,24 +21,30 @@ function byIds(doc: Document, ids: string): string {
     .join(' ');
 }
 
-function cssEscape(id: string): string {
+export function cssEscape(id: string): string {
   return typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id.replace(/["\\]/g, '\\$&');
 }
+
+/** Button-like texts that sites put in visually hidden labels; they say nothing about the question. */
+const GENERIC_LABEL = /^(attach|upload|browse|choose( a)? file|select( a)? file|drop files? here|enter manually|start typing\.*)$/i;
 
 /** Label for a single control. */
 export function labelFor(el: Control): string {
   const doc = el.ownerDocument;
+  const group = el.closest('[role="group"][aria-labelledby], fieldset');
   const candidates = [
     el.getAttribute('aria-labelledby') ? byIds(doc, el.getAttribute('aria-labelledby')!) : '',
     el.id ? text(doc.querySelector(`label[for="${cssEscape(el.id)}"]`)) : '',
     text(el.closest('label')),
     el.getAttribute('aria-label') ?? '',
     nearbyText(el),
+    // A file input inside <div role="group" aria-labelledby="upload-label-resume"> (Greenhouse).
+    group?.getAttribute('aria-labelledby') ? byIds(doc, group.getAttribute('aria-labelledby')!) : '',
     el.getAttribute('placeholder') ?? '',
     el.getAttribute('title') ?? '',
     humanizeName(el.getAttribute('name') ?? ''),
   ];
-  return cleanLabel(candidates.find((c) => c.trim()) ?? '');
+  return cleanLabel(candidates.find((c) => c.trim() && !GENERIC_LABEL.test(cleanLabel(c))) ?? '');
 }
 
 /** Question for a radio or checkbox group: fieldset legend, aria group label, or the group's heading text. */
@@ -62,8 +68,12 @@ function nearbyText(el: Element, maxDepth = 3): string {
   let node: Element | null = el;
   for (let depth = 0; node && depth < maxDepth; depth++) {
     for (let sib = node.previousElementSibling; sib; sib = sib.previousElementSibling) {
-      // Reaching another control (or a label bound to one) means we left this field: stop searching.
-      if (sib.matches('input, select, textarea, label[for]') || sib.querySelector('input, select, textarea')) return '';
+      // Reaching another control (or a label bound to another control) means we left this field.
+      if (sib.matches('input, select, textarea') || sib.querySelector('input, select, textarea')) return '';
+      if (sib.matches('label[for]')) {
+        const target = el.ownerDocument.getElementById(sib.getAttribute('for')!);
+        if (target && target !== el && !target.contains(el)) return '';
+      }
       const t = text(sib);
       if (t && t.length <= 300) return t;
     }

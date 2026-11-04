@@ -12,6 +12,8 @@ export const test = base.extend<{ context: BrowserContext; sw: Worker; extension
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
       headless: true,
+      viewport: { width: 1280, height: 900 },
+      deviceScaleFactor: 2, // screenshots from these runs are used in the README
       args: [`--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`],
     });
     await use(context);

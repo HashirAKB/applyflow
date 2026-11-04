@@ -86,4 +86,6 @@ Data flow for one fill:
 
 ## Deviations
 
-Recorded as they happen.
+1. Fixtures are rendered DOM, not raw HTML. Greenhouse, Lever and Ashby render their forms with JavaScript, so `scripts/capture-fixture.mjs` loads each live public posting in Chromium, bakes computed visibility into inline styles, and strips scripts, stylesheets and SVGs. Captured 2026-11-04: Greenhouse (GitLab, Figma), Lever (Spotify, Palantir), Ashby (Ramp, Linear).
+2. Workable's apply.workable.com answered HTTP 429 (Cloudflare rate limit 1015) to the sandbox for every request, including from a real browser. `tests/fixtures/workable-synthetic.html` is hand-built from Workable's markup patterns (data-ui hooks, QA_ question names) and is marked as such in the file and in the README support table.
+3. Custom dropdowns (react-select on Greenhouse, Ashby location autocomplete) cannot be exercised on static fixtures because their option lists are rendered by the site's JavaScript. The combobox path is unit-tested against a scripted widget, and the e2e suite asserts these fields are sent to the user rather than guessed.

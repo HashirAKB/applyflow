@@ -1,7 +1,17 @@
 // Detect fillable fields inside a form root and describe them for the matcher.
 
 import type { FieldDescriptor, FieldKind } from '../core/fields';
-import { groupLabel, labelFor, optionText } from './labels';
+import { cssEscape, groupLabel, labelFor, optionText } from './labels';
+
+/** Site-specific hooks an adapter can pass to detection. */
+export interface DetectHooks {
+  /** Containers to ignore entirely, e.g. a resume-autofill dropzone that would overwrite the form. */
+  skipSelector?: string;
+  /** Better label when the site's markup misleads the generic resolver. Return null to fall back. */
+  label?(el: HTMLElement): string | null;
+  /** Site widgets the generic pass cannot see, e.g. yes/no button pairs. Ids are assigned afterwards. */
+  customFields?(root: HTMLElement): DetectedField[];
+}
 
 export interface DetectedField {
   descriptor: FieldDescriptor;
@@ -38,13 +48,15 @@ function kindOf(el: HTMLElement): FieldKind | null {
   return 'text';
 }
 
-function isRequired(el: HTMLElement, label: string): boolean {
-  return (
-    (el as HTMLInputElement).required ||
-    el.getAttribute('aria-required') === 'true' ||
-    /\*\s*$/.test(label) ||
-    !!el.closest('.required, [data-required="true"]')
-  );
+function isRequired(el: HTMLElement): boolean {
+  if ((el as HTMLInputElement).required || el.getAttribute('aria-required') === 'true') return true;
+  if (el.closest('[role="group"][aria-required="true"], fieldset[aria-required="true"], [data-required="true"]')) return true;
+  // A "*" (or a .required marker) on the label, or on the legend of a radio/checkbox group.
+  const marked = (n: Element | null | undefined) =>
+    !!n && (/\*\s*$/.test(n.textContent ?? '') || !!n.querySelector('.required') || /required/i.test(n.className));
+  const label = (el.id && el.ownerDocument.querySelector(`label[for="${cssEscape(el.id)}"]`)) || el.closest('label');
+  const isOption = el instanceof HTMLInputElement && (el.type === 'radio' || el.type === 'checkbox');
+  return marked(label) || (isOption && marked(el.closest('fieldset')?.querySelector('legend')));
 }
 
 function hasValue(el: HTMLElement): boolean {
@@ -53,20 +65,22 @@ function hasValue(el: HTMLElement): boolean {
   return !!(el as HTMLInputElement).value?.trim();
 }
 
-export function detectFields(root: ParentNode): DetectedField[] {
-  const out: DetectedField[] = [];
+export function detectFields(root: HTMLElement, hooks: DetectHooks = {}): DetectedField[] {
+  const out: DetectedField[] = hooks.customFields?.(root) ?? [];
   const groups = new Map<string, HTMLInputElement[]>();
-  let n = 0;
-  const nextId = () => `af-${++n}`;
+  const labelOf = (el: HTMLElement) => hooks.label?.(el) || labelFor(el as HTMLInputElement);
 
   const controls = Array.from(root.querySelectorAll<HTMLElement>('input, select, textarea'));
   for (const el of controls) {
     const kind = kindOf(el);
     if (!kind) continue;
+    if (hooks.skipSelector && el.closest(hooks.skipSelector)) continue;
     if ((el as HTMLInputElement).disabled || (el as HTMLInputElement).readOnly) continue;
     if (el.closest(CAPTCHA_SELECTOR)) continue;
     // File inputs are often visually hidden behind a styled button, so do not require visibility for them.
-    if (kind !== 'file' && !isVisible(el)) continue;
+    // Custom radios and checkboxes are often hidden behind a styled label, so check the label instead.
+    const visibleTarget = kind === 'radio' || kind === 'checkbox' ? (el.closest('label') ?? el) : el;
+    if (kind !== 'file' && !isVisible(visibleTarget)) continue;
 
     if (kind === 'radio' || kind === 'checkbox') {
       const input = el as HTMLInputElement;
@@ -76,7 +90,7 @@ export function detectFields(root: ParentNode): DetectedField[] {
       continue;
     }
 
-    const label = labelFor(el as HTMLInputElement);
+    const label = labelOf(el);
     const options =
       el instanceof HTMLSelectElement
         ? Array.from(el.options)
@@ -85,11 +99,11 @@ export function detectFields(root: ParentNode): DetectedField[] {
         : [];
     out.push({
       descriptor: {
-        id: nextId(),
+        id: '',
         label,
         kind,
         options,
-        required: isRequired(el, el.closest('label')?.textContent ?? ''),
+        required: isRequired(el),
         name: el.getAttribute('name') ?? '',
         hasValue: hasValue(el),
       },
@@ -101,14 +115,14 @@ export function detectFields(root: ParentNode): DetectedField[] {
     const kind = key.startsWith('radio') ? 'radio' : 'checkbox';
     // A single checkbox is a yes/no question whose label is its own text ("I agree to ...").
     const single = kind === 'checkbox' && inputs.length === 1;
-    const label = single ? labelFor(inputs[0]) : groupLabel(inputs[0]);
+    const label = (single ? hooks.label?.(inputs[0]) || labelFor(inputs[0]) : hooks.label?.(inputs[0]) || groupLabel(inputs[0]));
     out.push({
       descriptor: {
-        id: nextId(),
+        id: '',
         label,
         kind,
         options: single ? [] : inputs.map(optionText),
-        required: inputs.some((i) => isRequired(i, '')),
+        required: inputs.some((i) => isRequired(i)),
         name: inputs[0].name,
         // A lone checkbox's unchecked state is a valid answer, so only groups count as pre-filled.
         hasValue: !single && inputs.some((i) => i.checked),
@@ -117,9 +131,10 @@ export function detectFields(root: ParentNode): DetectedField[] {
     });
   }
 
-  // Keep document order so the side panel lists questions as the user sees them.
-  const pos = (f: DetectedField) => controls.indexOf(f.elements[0]);
-  return out.sort((a, b) => pos(a) - pos(b));
+  // Keep document order so the side panel lists questions as the user sees them, then number them.
+  out.sort((a, b) => (a.elements[0].compareDocumentPosition(b.elements[0]) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+  out.forEach((f, i) => (f.descriptor.id = `af-${i + 1}`));
+  return out;
 }
 
 export function findBlockers(doc: Document): string[] {

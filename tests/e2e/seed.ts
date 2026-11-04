@@ -27,7 +27,7 @@ export const ANSWERS = [
   { questionId: 'willing_to_relocate', value: 'Yes', aliases: [], updatedAt: '' },
   { questionId: 'work_authorization', value: 'Yes', aliases: [], updatedAt: '' },
   { questionId: 'requires_sponsorship', value: 'No', aliases: [], updatedAt: '' },
-  { questionId: 'expected_ctc', value: '95000 GBP', aliases: [], updatedAt: '' },
+  { questionId: 'expected_ctc', value: 'Open to discussion', aliases: [], updatedAt: '' },
   { questionId: 'how_heard', value: 'LinkedIn', aliases: [], updatedAt: '' },
 ];
 

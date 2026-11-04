@@ -5,7 +5,7 @@ Status legend: [ ] todo, [x] done, [~] partial
 - [x] M1 extension skeleton + storage + encryption
 - [x] M2 form engine + generic adapter
 - [x] M3 answer bank + matching + eval
-- [ ] M4 Greenhouse/Lever/Ashby/Workable adapters + e2e
+- [x] M4 Greenhouse/Lever/Ashby/Workable adapters + e2e
 - [ ] M5 side panel UI + onboarding/resume import
 - [ ] M6 tracker
 - [ ] M7 LinkedIn/Naukri adapters

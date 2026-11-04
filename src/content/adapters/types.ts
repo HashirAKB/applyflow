@@ -1,11 +1,12 @@
 import type { JobInfo } from '../../core/messages';
+import type { DetectHooks } from '../detect';
 
 // One interface for every site. An adapter only knows where things are on its site;
 // matching and filling are shared.
 
 export type Verification = 'live-tested' | 'fixture-tested' | 'unverified';
 
-export interface SiteAdapter {
+export interface SiteAdapter extends DetectHooks {
   id: string;
   name: string;
   verification: Verification;

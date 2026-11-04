@@ -8,7 +8,8 @@
 import { matchOption } from '../core/options';
 import type { ResumeFile } from '../core/messages';
 import { fromBase64 } from '../core/crypto';
-import type { DetectedField } from './detect';
+import { isVisible, type DetectedField } from './detect';
+import { cssEscape } from './labels';
 
 function nativeSetter(el: HTMLElement, prop: 'value' | 'checked'): ((v: unknown) => void) | undefined {
   const proto = Object.getPrototypeOf(el);
@@ -19,14 +20,61 @@ function fire(el: HTMLElement, type: string) {
   el.dispatchEvent(new Event(type, { bubbles: true }));
 }
 
-export function setText(el: HTMLInputElement | HTMLTextAreaElement, value: string) {
+export function setText(el: HTMLInputElement | HTMLTextAreaElement, value: string, keepFocus = false) {
   el.focus();
   const set = nativeSetter(el, 'value');
   if (set) set.call(el, value);
   else el.value = value;
   fire(el, 'input');
   fire(el, 'change');
-  el.blur();
+  if (!keepFocus) el.blur();
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Options currently shown for an ARIA combobox (react-select and similar widgets). Only options that
+ * belong to this widget count: its aria-controls list, react-select's id scheme, or a visible option
+ * list rendered next to the input. Never the whole document, where other widgets keep their own lists.
+ */
+function comboboxOptions(input: HTMLInputElement): HTMLElement[] {
+  const doc = input.ownerDocument;
+  const listId = input.getAttribute('aria-controls') || input.getAttribute('aria-owns');
+  const list = listId ? doc.getElementById(listId) : null;
+  if (list) return Array.from(list.querySelectorAll<HTMLElement>('[role="option"]'));
+  if (input.id) {
+    const rs = Array.from(doc.querySelectorAll<HTMLElement>(`[id^="react-select-${cssEscape(input.id)}-option-"]`));
+    if (rs.length) return rs;
+  }
+  let container: HTMLElement | null = input.parentElement;
+  for (let i = 0; container && i < 4; i++, container = container.parentElement) {
+    const opts = Array.from(container.querySelectorAll<HTMLElement>('[role="option"]')).filter(isVisible);
+    if (opts.length) return opts;
+    if (container.matches('fieldset, form, [role="group"]')) break;
+  }
+  return [];
+}
+
+/**
+ * Custom dropdowns: type the answer so the widget filters its options, then click the option that
+ * matches. If no option matches within the timeout, clear the text and report failure so the user
+ * is asked instead.
+ */
+export async function fillCombobox(input: HTMLInputElement, value: string, timeoutMs = 1500): Promise<boolean> {
+  input.focus();
+  input.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+  setText(input, value, true);
+  for (const end = Date.now() + timeoutMs; Date.now() < end; await sleep(100)) {
+    const opts = comboboxOptions(input);
+    const i = matchOption(value, opts.map((o) => (o.textContent ?? '').trim()));
+    if (i >= 0) {
+      opts[i].dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+      opts[i].click();
+      return true;
+    }
+  }
+  setText(input, '');
+  return false;
 }
 
 export function setSelect(el: HTMLSelectElement, optionText: string): boolean {
@@ -60,7 +108,7 @@ const TRUTHY = /^(yes|y|true|1|i agree|agree|checked)$/i;
  * Fill one detected field with a value already decided by the matcher.
  * Returns false when the value cannot be applied (e.g. no option matches), so the caller asks the user.
  */
-export function fillField(field: DetectedField, value: string, resume: ResumeFile | null): boolean {
+export async function fillField(field: DetectedField, value: string, resume: ResumeFile | null): Promise<boolean> {
   const { kind, options } = field.descriptor;
   const [el] = field.elements;
   switch (kind) {
@@ -69,9 +117,7 @@ export function fillField(field: DetectedField, value: string, resume: ResumeFil
         const i = matchOption(value, options);
         return i >= 0 && setSelect(el, options[i]);
       }
-      // ARIA combobox (custom dropdown): type the value; the page's own widget resolves it.
-      setText(el as HTMLInputElement, value);
-      return true;
+      return fillCombobox(el as HTMLInputElement, value);
     }
     case 'radio': {
       const i = matchOption(value, options);
