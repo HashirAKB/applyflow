@@ -1,16 +1,20 @@
 // Message handlers. Kept separate from index.ts so they read top to bottom without chrome event plumbing.
 
-import type { Request, State } from '../core/messages';
+import type { Request, SaveKey, State } from '../core/messages';
 import type { Store } from '../storage/store';
 import { answerField, fillTab, generate, nextStep } from './fill';
 import { autoApply } from './autosubmit';
 import { diagnostics } from './diagnostics';
+
+const SAVE_KEYS: SaveKey[] = ['profile', 'answers', 'settings', 'applications', 'secrets', 'resume'];
 
 export async function handle(store: Store, msg: Request, _sender: chrome.runtime.MessageSender): Promise<unknown> {
   switch (msg.type) {
     case 'getState':
       return getState(store);
     case 'save':
+      // Explicit allow-list: the usage counter behind the daily cap is never writable from the UI.
+      if (!SAVE_KEYS.includes(msg.key)) throw new Error(`Cannot save ${msg.key}`);
       await store.set(msg.key, msg.value as never);
       return getState(store);
     case 'unlock':

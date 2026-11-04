@@ -36,8 +36,9 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((msg: Request, sender, sendResponse) => {
-  // Only our own extension contexts may talk to the worker. There is no externally_connectable.
-  if (sender.id !== chrome.runtime.id) return false;
+  // Only our own extension pages (the side panel) may talk to the worker. Content scripts never
+  // need to, so a compromised page context cannot read the profile. There is no externally_connectable.
+  if (sender.id !== chrome.runtime.id || !sender.url?.startsWith(chrome.runtime.getURL(''))) return false;
   ready
     .then(() => handle(store, msg, sender))
     .then(async (result) => {
